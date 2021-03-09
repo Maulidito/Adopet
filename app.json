@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "Adopet",
+    "slug": "Adopet",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./Image/Animal.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#F5F5FA"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.sanbercode.adopet",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "description": "Aplikasi Mengadopsi Peliharaan\n",
+    "githubUrl": "https://github.com/Maulidito/BootcampReactNative/tree/main/Final-Project/Adopet"
+  }
+}
