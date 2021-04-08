@@ -11,6 +11,7 @@ import {
   FlatList,
   Modal,
   Button,
+  ActivityIndicator,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import GetApiKey from "../Api/ApiKeyRescueGroup";
@@ -26,6 +27,7 @@ class HomeScreen extends React.Component {
     this.state = {
       dataAnimal: [],
       modalView: false,
+      animating: true,
     };
 
     this.getAnimalData().then((response) =>
@@ -105,6 +107,13 @@ class HomeScreen extends React.Component {
               return <Item val={data} />;
             }}
           />
+          <View style={styles.loadingStyle}>
+            <ActivityIndicator
+              animating={this.state.animating}
+              color="#7878AB"
+              size="large"
+            />
+          </View>
         </View>
       </View>
     );
@@ -125,7 +134,7 @@ class HomeScreen extends React.Component {
             image: val.attributes.pictureThumbnailUrl,
           });
         });
-
+        this.setState({ animating: false });
         return this.state.dataAnimal;
       })
       .catch((error) => {
@@ -133,19 +142,6 @@ class HomeScreen extends React.Component {
       });
   }
 
-  async getSpeciesAnimal(idSpecies) {
-    return await axios
-      .get(
-        `https://api.rescuegroups.org/v5/public/animals/species/${idSpecies}`,
-        {
-          headers: GetApiKey(),
-        }
-      )
-      .then((response) => response.data.data[0].attributes.singular)
-      .catch((error) => {
-        console.log(error);
-      });
-  }
   initDataAnimal = () => {
     this.state.dataAnimal.map((val, i) => {
       console.log(val);
@@ -224,5 +220,10 @@ const styles = StyleSheet.create({
     width: 300,
     height: 300,
     padding: 20,
+  },
+  loadingStyle: {
+    height: "50%",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

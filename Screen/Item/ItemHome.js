@@ -6,6 +6,8 @@ import {
   Image,
   TouchableOpacity,
   Modal,
+  ActivityIndicator,
+  Alert,
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -36,7 +38,7 @@ class Item extends React.Component {
       >
         <Modal
           visible={this.state.modalShow}
-          animationType="slide"
+          animationType="fade"
           transparent={true}
         >
           <View style={styles.modalStyle}>
@@ -44,7 +46,7 @@ class Item extends React.Component {
               <View style={styles.modalContentImage}>
                 <ScrollView showsVerticalScrollIndicator={false}>
                   <Image
-                    source={{ uri: this.props.val.item.image }}
+                    source={{ uri: this.props.val.item.image, scale: 1 }}
                     style={styles.modalImage}
                     defaultSource={require("../../Image/Animal.png")}
                   />
@@ -139,6 +141,7 @@ const styles = StyleSheet.create({
     height: "100%",
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#8c8c8c90",
   },
   modalBody: {
     backgroundColor: "white",
@@ -151,15 +154,19 @@ const styles = StyleSheet.create({
   modalContentImage: {
     backgroundColor: "red",
     flex: 0.65,
+    flexDirection: "row",
     borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
   },
   modalContentText: {
     backgroundColor: "cyan",
     flex: 0.35,
   },
   modalImage: {
-    width: "70%",
+    width: "100%",
     height: 500,
-    borderRadius: 10,
+    borderTopRightRadius: 10,
+    borderTopLeftRadius: 10,
   },
 });

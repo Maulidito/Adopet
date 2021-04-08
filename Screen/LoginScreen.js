@@ -58,7 +58,12 @@ export default class LoginScreen extends React.Component {
         </View>
 
         <View style={styles.footer}>
-          <TouchableOpacity style={styles.footerButton} onPress={this.onLogin}>
+          <TouchableOpacity
+            style={styles.footerButton}
+            onPress={() => {
+              this.onLogin();
+            }}
+          >
             <Text style={styles.footerButtonText}>LOGIN</Text>
           </TouchableOpacity>
           <Text style={styles.footerText}>
