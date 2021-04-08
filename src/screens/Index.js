@@ -10,6 +10,7 @@ import ProfileScreen from "./ProfileScreen";
 import { Text, View, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
+
 const Stack = createStackNavigator();
 const HomeStack = createMaterialBottomTabNavigator();
 const LoginStack = createStackNavigator();
@@ -72,7 +73,7 @@ const HomeNav = ({ route }) => {
   );
 };
 
-function LoginNav() {
+const LoginNav = () =>{
   return (
     <LoginStack.Navigator initialRouteName="LoginScreen" headerMode="none">
       <LoginStack.Screen name="LoginScreen" component={LoginScreen} />

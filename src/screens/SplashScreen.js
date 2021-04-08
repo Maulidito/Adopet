@@ -7,7 +7,7 @@ export default SplashScreen = () => {
   return (
     <View style={{ height: screenHeight, backgroundColor: "#F5F5FA" }}>
       <ImageBackground
-        source={require("../Image/SplashTop.png")}
+        source={require("../images/SplashTop.png")}
         style={{
           width: screenWidth,
 
@@ -15,7 +15,7 @@ export default SplashScreen = () => {
         }}
       />
       <ImageBackground
-        source={require("../Image/Animal.png")}
+        source={require("../images/Animal.png")}
         style={{
           width: screenWidth,
 
@@ -23,7 +23,7 @@ export default SplashScreen = () => {
         }}
       />
       <ImageBackground
-        source={require("../Image/SplashBot.png")}
+        source={require("../images/SplashBot.png")}
         style={{
           width: screenWidth,
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   StyleSheet,
@@ -11,33 +11,30 @@ import {
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-class Item extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      modalShow: false,
-    };
+const Item = (props)=> {
 
-    if (this.props.val.item.image == undefined) {
-      this.props.val.item.image = "https://picsum.photos/200/300";
-    } else if (this.props.val.item.name == undefined) {
-      this.props.val.item.name = "Animals";
-    } else if (this.props.val.item.desc == undefined) {
-      this.props.val.item.desc = "Please take care of me :)";
-    } else if (this.props.val.item.sex == undefined) {
-      this.props.val.item.sex = "Unknown";
+    const [modalshow,setModalShow] = useState(false)
+
+    if (props.val.item.image == undefined) {
+      props.val.item.image = "https://picsum.photos/200/300";
+    } else if (props.val.item.name == undefined) {
+      props.val.item.name = "Animals";
+    } else if (props.val.item.desc == undefined) {
+      props.val.item.desc = "Please take care of me :)";
+    } else if (props.val.item.sex == undefined) {
+      props.val.item.sex = "Unknown";
     }
-  }
-  render() {
+  
+  
     return (
       <TouchableOpacity
         style={styles.container}
         onPress={() => {
-          this.setState({ modalShow: true });
+          setModalShow(true)
         }}
       >
         <Modal
-          visible={this.state.modalShow}
+          visible={modalshow}
           animationType="fade"
           transparent={true}
         >
@@ -46,9 +43,9 @@ class Item extends React.Component {
               <View style={styles.modalContentImage}>
                 <ScrollView showsVerticalScrollIndicator={false}>
                   <Image
-                    source={{ uri: this.props.val.item.image, scale: 1 }}
+                    source={{ uri: props.val.item.image, scale: 1 }}
                     style={styles.modalImage}
-                    defaultSource={require("../../Image/Animal.png")}
+                    defaultSource={require("../images/Animal.png")}
                   />
                 </ScrollView>
               </View>
@@ -59,17 +56,17 @@ class Item extends React.Component {
 
         <View style={styles.contentImage}>
           <Image
-            source={{ uri: this.props.val.item.image }}
+            source={{ uri: props.val.item.image }}
             style={styles.imageStyle}
-            defaultSource={require("../../Image/Animal.png")}
+            defaultSource={require("../images/Animal.png")}
           />
         </View>
         <View style={styles.contentBody}>
           <Text style={styles.contentBodyTitle} numberOfLines={1}>
-            {this.props.val.item.name}
+            {props.val.item.name}
           </Text>
           <Text style={styles.contentBodyText} numberOfLines={4}>
-            {this.props.val.item.desc}
+            {props.val.item.desc}
           </Text>
         </View>
 
@@ -81,7 +78,7 @@ class Item extends React.Component {
       </TouchableOpacity>
     );
   }
-}
+
 
 export default Item;
 
