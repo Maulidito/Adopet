@@ -10,7 +10,6 @@ export default SplashScreen = () => {
         source={require("../images/SplashTop.png")}
         style={{
           width: screenWidth,
-
           flexGrow: 1,
         }}
       />

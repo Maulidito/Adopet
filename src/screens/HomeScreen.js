@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from "react";
+import React, { useLayoutEffect, useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -14,7 +14,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import GetApiKey from "../api/ApiKeyRescueGroup";
+import { getAnimalData } from "../api/ApiDatabase";
 import Item from "../components/ItemHome";
 import axios from "axios";
 
@@ -26,42 +26,15 @@ const HomeScreen = (props) => {
   const [modalView, setmodalView] = useState(false);
   const [animating, setAnimating] = useState(true);
 
-  useLayoutEffect(() => {
-    getAnimalData();
+  useEffect(() => {
+    getAnimalData(
+      dataAnimal,
+      (dataAnimal) => setDataAnimal(dataAnimal),
+      () => setAnimating(false)
+    );
   }, []);
-  
 
-  const getAnimalData = async () => {
-    return await axios
-      .get("https://api.rescuegroups.org/v5/public/animals/?limit=100", {
-        headers: GetApiKey(),
-      })
-      .then((response) => {
-        response.data.data.map((val, i) => {
-          dataAnimal.push({
-            id: String(i),
-            name: val.attributes.name,
-            sex: val.attributes.sex,
-            desc: val.attributes.descriptionText,
-            image: val.attributes.pictureThumbnailUrl,
-          });
-        });
-        setAnimating(false);
-
-        return dataAnimal;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  initDataAnimal = () => {
-    dataAnimal.map((val, i) => {
-      console.log(val);
-      return <Item val={val} />;
-    });
-  };
-
+  console.log(dataAnimal);
   return (
     <View style={styles.container}>
       <Modal visible={modalView} animationType="slide" transparent={true}>
@@ -127,6 +100,7 @@ const HomeScreen = (props) => {
             return <Item val={data} />;
           }}
         />
+
         <View style={styles.loadingStyle}>
           <ActivityIndicator
             animating={animating}

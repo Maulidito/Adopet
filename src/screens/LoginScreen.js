@@ -1,6 +1,8 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
-
+import { connect } from "react-redux";
+import { onLogin } from "../Context/Action/Action";
+import { bindActionCreators } from "redux";
 import {
   Text,
   View,
@@ -11,47 +13,20 @@ import {
   ImageBackground,
   LogBox,
 } from "react-native";
-
 import Flash from "react-native-flash-message";
 import { showMessage, hideMessage } from "react-native-flash-message";
-
-import db from "../api/ApiDatabase";
 
 const screenHeight = Dimensions.get("screen").height;
 const screenWidth = Dimensions.get("screen").width;
 
-const LoginScreen = (props) => {
+const LoginScreen = ({ navigation, onLogin, errMessage }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [errMessage, setErrMessage] = useState("");
-
-  onLogin = () => {
-    db(username, password)
-      .then((res) => {
-        if (res.data.length == 1 && username != "" && password != "") {
-          props.navigation.navigate("Home", res.data[0]);
-        } else {
-          console.log("test");
-          setErrMessage("Username atau password salah");
-          showMessage({
-            message: "Incorrect Username or Password",
-            duration: 5000,
-            backgroundColor: "red",
-            color: "white",
-          });
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        setErrMessage("error ", err);
-      });
-  };
-
+  
   onSignUp = () => {
-    return props.navigation.navigate("SignUpScreen");
+    return navigation.navigate("SignUpScreen");
   };
 
-  //console.disableYellowBox = true;
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor={"#57419D"} />
@@ -88,7 +63,9 @@ const LoginScreen = (props) => {
         <TouchableOpacity
           style={styles.footerButton}
           onPress={() => {
-            onLogin();
+            onLogin({ username, password }, (data) =>
+              navigation.navigate("Home", data)
+            );
           }}
         >
           <Text style={styles.footerButtonText}>LOGIN</Text>
@@ -100,15 +77,14 @@ const LoginScreen = (props) => {
           </TouchableOpacity>
         </Text>
       </View>
-
-      {
-        // <Flash position="bottom" />
-      }
     </View>
   );
 };
+const mapStateToProps = (state) => state;
+const mapDispatchToProps = (dispatch) =>
+  bindActionCreators({ onLogin }, dispatch);
 
-export default LoginScreen;
+export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen);
 
 const styles = StyleSheet.create({
   container: {
