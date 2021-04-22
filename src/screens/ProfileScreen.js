@@ -12,9 +12,13 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import ItemProfile from "../components/ItemProfile";
 import ItemAccount from "../components/ItemAccount";
 
+import { connect } from "react-redux";
+
 const StackNav = createMaterialTopTabNavigator();
 
-const ProfileScreen = (props) => {
+const ProfileScreen = ({ Reducer }) => {
+  const { user } = Reducer;
+  console.log(user);
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -23,7 +27,7 @@ const ProfileScreen = (props) => {
             source={require("../images/Example_Profile.jpg")}
             style={styles.headerImage}
           ></Image>
-          <Text style={styles.headerName}>{props.route.params.name}</Text>
+          <Text style={styles.headerName}>{user.name}</Text>
         </View>
       </View>
       <View style={styles.tab}>
@@ -39,7 +43,6 @@ const ProfileScreen = (props) => {
           <StackNav.Screen
             name={"ItemProfile"}
             component={ItemProfile}
-            initialParams={props.route.params}
             options={{ title: "Profile" }}
           />
           <StackNav.Screen
@@ -53,9 +56,9 @@ const ProfileScreen = (props) => {
   );
 };
 
+const mapStateToProps = (state) => state;
 
-
-export default ProfileScreen;
+export default connect(mapStateToProps, null)(ProfileScreen);
 
 const styles = StyleSheet.create({
   container: {

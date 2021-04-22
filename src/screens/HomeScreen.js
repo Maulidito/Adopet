@@ -14,56 +14,41 @@ import {
   ActivityIndicator,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { getAnimalData } from "../api/ApiDatabase";
+//import { getAnimalData } from "../api/ApiDatabase";
 import Item from "../components/ItemHome";
-import axios from "axios";
+import { connect } from "react-redux";
+import { getAnimalData } from "../Context/Action/ActionDataAnimal";
+import { bindActionCreators } from "redux";
 
 const screenWidth = Dimensions.get("screen").width;
 const screenHeight = Dimensions.get("screen").height;
 
-const HomeScreen = (props) => {
-  const [dataAnimal, setDataAnimal] = useState([]);
-  const [modalView, setmodalView] = useState(false);
+const HomeScreen = ({ Reducer, ReducerAnimal, getAnimalData }) => {
+  const { user } = Reducer;
+  const { dataAnimal } = ReducerAnimal;
+
+  const [countData, setCountData] = useState(10);
+  const [countAllData, setCountAllData] = useState(50);
+
   const [animating, setAnimating] = useState(true);
 
   useEffect(() => {
-    getAnimalData(
-      dataAnimal,
-      (dataAnimal) => setDataAnimal(dataAnimal),
-      () => setAnimating(false)
-    );
-  }, []);
+    getAnimalData(countAllData, () => {
+      setAnimating(false);
+    });
+  }, [countAllData]);
 
-  console.log(dataAnimal);
   return (
     <View style={styles.container}>
-      <Modal visible={modalView} animationType="slide" transparent={true}>
-        <View style={styles.modalCentered}>
-          <View style={styles.modalBody}>
-            <Text>Sdfsd</Text>
-            <Button
-              title="close"
-              onPress={() => {
-                setmodalView(false);
-              }}
-            />
-          </View>
-        </View>
-      </Modal>
       <StatusBar backgroundColor={"#57419D"} />
       <View style={styles.headerProfile}>
         <Image
           source={require("../images/Example_Profile.jpg")}
           style={styles.headerImageProfile}
         />
-        <Text style={styles.headerTextUsername}>{props.route.params.name}</Text>
-        <TouchableOpacity
-          style={styles.headerIconBell}
-          onPress={() => {
-            setmodalView(true);
-          }}
-        >
-          <Icon name="bell-outline" size={20} color="#5533EA" />
+        <Text style={styles.headerTextUsername}>{user.name}</Text>
+        <TouchableOpacity style={styles.headerIconBell}>
+          <Icon name="bell-outline" size={20} color="#57419D" />
         </TouchableOpacity>
       </View>
 
@@ -95,9 +80,19 @@ const HomeScreen = (props) => {
         <FlatList
           ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
           showsVerticalScrollIndicator={false}
-          data={dataAnimal}
-          renderItem={(data) => {
-            return <Item val={data} />;
+          keyExtractor={(item, index) => index.toString()}
+          onEndReached={() => {
+            if (countData > countAllData / 2) {
+              console.log("asdasdasdasd", countAllData, " ", countData);
+              setCountAllData(countAllData + 50);
+            }
+
+            setCountData(countData + 10);
+          }}
+          onEndReachedThreshold={0.8}
+          data={dataAnimal.slice(0, countData)}
+          renderItem={({ item }) => {
+            return <Item item={item} />;
           }}
         />
 
@@ -113,7 +108,11 @@ const HomeScreen = (props) => {
   );
 };
 
-export default HomeScreen;
+const mapStateToProps = (state) => state;
+const mapDispatchToProps = (dispatch) =>
+  bindActionCreators({ getAnimalData }, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);
 
 const styles = StyleSheet.create({
   container: {
@@ -172,18 +171,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 25,
     paddingBottom: 80,
   },
-  modalCentered: {
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100%",
-    width: "100%",
-  },
-  modalBody: {
-    backgroundColor: "white",
-    width: 300,
-    height: 300,
-    padding: 20,
-  },
+
   loadingStyle: {
     height: "50%",
     alignItems: "center",

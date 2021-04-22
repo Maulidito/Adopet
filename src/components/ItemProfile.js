@@ -1,32 +1,29 @@
 import React from "react";
 import { View, StyleSheet, Text } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import { connect } from "react-redux";
 
-const ItemProfile = (props) => {
-  console.log(props);
+const ItemProfile = ({ Reducer }) => {
+  const { user } = Reducer;
   return (
     <View style={styles.container}>
       <View style={styles.card}>
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.cardNameSection}>
             <Text style={styles.cardTitleName}>Name</Text>
-            <Text> {props.route.params.name}</Text>
+            <Text> {user.name}</Text>
           </View>
           <View style={styles.cardNameSection}>
             <Text style={styles.cardTitleName}>Gender</Text>
-            <Text> {props.route.params.sex}</Text>
+            <Text> {user.sex}</Text>
           </View>
           <View style={styles.cardBioSection}>
             <Text style={styles.cardTitleName}>Bio</Text>
-            <Text>{props.route.params.Description}</Text>
+            <Text>{user.Description}</Text>
           </View>
           <View style={styles.cardNameSection}>
             <Text style={styles.cardTitleName}>Favorite Pet</Text>
-            <Text> {props.route.params.favorite}</Text>
-          </View>
-          <View style={styles.cardNameSection}>
-            <Text style={styles.cardTitleName}>Create an account on</Text>
-            <Text> {props.route.params.createdAt.substring(0, 10)}</Text>
+            <Text> {user.favorite}</Text>
           </View>
         </ScrollView>
       </View>
@@ -34,7 +31,8 @@ const ItemProfile = (props) => {
   );
 };
 
-export default ItemProfile;
+const mapStateToProps = (state) => state;
+export default connect(mapStateToProps, null)(ItemProfile);
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 20,

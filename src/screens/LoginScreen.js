@@ -1,7 +1,7 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { connect } from "react-redux";
-import { onLogin } from "../Context/Action/Action";
+import { onLogin, clearErrorMessage } from "../Context/Action/Action";
 import { bindActionCreators } from "redux";
 import {
   Text,
@@ -13,19 +13,26 @@ import {
   ImageBackground,
   LogBox,
 } from "react-native";
-import Flash from "react-native-flash-message";
-import { showMessage, hideMessage } from "react-native-flash-message";
 
 const screenHeight = Dimensions.get("screen").height;
 const screenWidth = Dimensions.get("screen").width;
 
-const LoginScreen = ({ navigation, onLogin, errMessage }) => {
+const LoginScreen = ({
+  navigation,
+  onLogin,
+  errMessage,
+  clearErrorMessage,
+}) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  
+
   onSignUp = () => {
     return navigation.navigate("SignUpScreen");
   };
+
+  navigation.addListener("blur", () => {
+    clearErrorMessage();
+  });
 
   return (
     <View style={styles.container}>
@@ -82,7 +89,7 @@ const LoginScreen = ({ navigation, onLogin, errMessage }) => {
 };
 const mapStateToProps = (state) => state;
 const mapDispatchToProps = (dispatch) =>
-  bindActionCreators({ onLogin }, dispatch);
+  bindActionCreators({ onLogin, clearErrorMessage }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen);
 

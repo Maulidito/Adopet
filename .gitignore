@@ -8,6 +8,9 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
+src/api/ApiKeyRescueGroup.js
 
 # macOS
 .DS_Store
+
+

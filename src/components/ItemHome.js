@@ -11,15 +11,18 @@ import {
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-const Item = (props) => {
+import ModalItem from "../components/ModalItem";
+const Item = ({ item }) => {
   const [modalshow, setModalShow] = useState(false);
 
-  if (props.val.item.name == undefined) {
-    props.val.item.name = "Animals";
-  } else if (props.val.item.desc == undefined) {
-    props.val.item.desc = "Please take care of me :)";
-  } else if (props.val.item.sex == undefined) {
-    props.val.item.sex = "Unknown";
+  if (item.name == undefined) {
+    item.name = "Animals";
+  }
+  if (item.description == undefined) {
+    item.description = "Please take care of me :)";
+  }
+  if (item.sex == undefined) {
+    item.sex = "Unknown";
   }
 
   return (
@@ -29,50 +32,31 @@ const Item = (props) => {
         setModalShow(true);
       }}
     >
-      <Modal visible={modalshow} animationType="fade" transparent={true}>
-        <View style={styles.modalStyle}>
-          <View style={styles.modalBody}>
-            <View style={styles.modalContentImage}>
-              <ScrollView showsVerticalScrollIndicator={false}>
-                <Image
-                  source={
-                    props.val.item.image
-                      ? { uri: props.val.item.image, scale: 1 }
-                      : require("../images/Animal.png")
-                  }
-                  style={
-                    props.val.item.image
-                      ? styles.modalImage
-                      : { width: 100, height: 100 }
-                  }
-                />
-              </ScrollView>
-            </View>
-            <View style={styles.modalContentText}></View>
-          </View>
-        </View>
-      </Modal>
-
+      <ModalItem
+        modalshow={modalshow}
+        item={item}
+        closeModal={() => {
+          setModalShow(false);
+        }}
+      />
       <View style={styles.contentImage}>
         <Image
           source={
-            props.val.item.image
-              ? { uri: props.val.item.image, scale: 1 }
+            item.dataPictures[0]
+              ? { uri: item.dataPictures[0], scale: 1 }
               : require("../images/Animal.png")
           }
           style={
-            props.val.item.image
-              ? styles.imageStyle
-              : { width: "100%", height: "100%" }
+            item.image ? styles.imageStyle : { width: "100%", height: "100%" }
           }
         />
       </View>
       <View style={styles.contentBody}>
         <Text style={styles.contentBodyTitle} numberOfLines={1}>
-          {props.val.item.name}
+          {item.name}
         </Text>
         <Text style={styles.contentBodyText} numberOfLines={4}>
-          {props.val.item.desc}
+          {item.description}
         </Text>
       </View>
 
@@ -136,39 +120,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: 25,
     height: 25,
-  },
-
-  modalStyle: {
-    width: "100%",
-    height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#8c8c8c90",
-  },
-  modalBody: {
-    backgroundColor: "white",
-    height: 300,
-    width: 300,
-    borderRadius: 10,
-    elevation: 5,
-    flexDirection: "column",
-  },
-  modalContentImage: {
-    backgroundColor: "red",
-    flex: 0.65,
-    flexDirection: "row",
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  modalContentText: {
-    backgroundColor: "cyan",
-    flex: 0.35,
-  },
-  modalImage: {
-    width: "100%",
-    height: 500,
-    borderTopRightRadius: 10,
-    borderTopLeftRadius: 10,
   },
 });

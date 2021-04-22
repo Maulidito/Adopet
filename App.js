@@ -1,7 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { applyMiddleware, createStore } from "redux";
+import { applyMiddleware, createStore, combineReducers } from "redux";
 import { Provider } from "react-redux";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
@@ -13,6 +13,8 @@ import HomeScreen from "./src/screens/HomeScreen";
 import ProfileScreen from "./src/screens/ProfileScreen";
 import Reducer from "./src/Context/Reducer/Reducer";
 import ReduxThunk from "redux-thunk";
+import ReducerAnimal from "./src/Context/Reducer/ReducerAnimal";
+import ResolveAuthScreen from "./src/screens/ResolveAuthScreen";
 const Stack = createStackNavigator();
 const HomeStack = createMaterialBottomTabNavigator();
 const LoginStack = createStackNavigator();
@@ -83,16 +85,18 @@ const LoginNav = () => {
     </LoginStack.Navigator>
   );
 };
-
-const reducer = createStore(Reducer, applyMiddleware(ReduxThunk));
+const allReducer = combineReducers({ Reducer, ReducerAnimal });
+const reducer = createStore(allReducer, applyMiddleware(ReduxThunk));
+console.log(reducer.getState())
 
 const App = () => {
   return (
     <Provider store={reducer}>
       <NavigationContainer>
-        <Stack.Navigator headerMode="none" initialRouteName="Login">
+        <Stack.Navigator headerMode="none" initialRouteName={"auth"}>
           <Stack.Screen name="Login" component={LoginNav} />
           <Stack.Screen name="Home" component={HomeNav} />
+          <Stack.Screen name="auth" component={ResolveAuthScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

@@ -1,20 +1,76 @@
-import db from "../../api/ApiDatabase";
+import Db from "../../database/LinkDatabase";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+export const onLogin = (data, callback) => async (dispatch, getState) => {
+  return await Db.post("/signin", data)
+    .then(async ({ data }) => {
+      const dataUser = await getDataUser(data.token);
 
-export const onLogin = ({ username, password }, callback) => async (
-  dispatch,
-  getState
-) => {
-  return await db(username, password)
-    .then((res) => {
-      if (res.data.length == 1 && username != "" && password != "") {
-        callback(res.data[0]);
-        dispatch({ type: "login_succes", payload: "" });
-      } else {
-        dispatch({
-          type: "login_failed",
-          payload: "error username dan password",
-        });
-      }
+      dispatch({
+        type: "login_success",
+        payload: { token: data.token, user: dataUser.data },
+      });
+      await AsyncStorage.setItem("auth", data.token);
+      callback();
     })
-    .catch((err) => {});
+    .catch((err) => {
+      console.log("singin", err);
+      dispatch({
+        type: "failed",
+        payload: "username or password wrong",
+      });
+    });
+};
+
+export const onSignup = (data, callback) => async (dispatch, getState) => {
+  return await Db.post("/signup", data)
+    .then((res) => {
+      dispatch({
+        type: "signup_success",
+        payload: "username and password already exist",
+      });
+      callback();
+    })
+    .catch((err) => {
+      dispatch({
+        type: "failed",
+        payload: "username already exist",
+      });
+    });
+};
+
+export const clearErrorMessage = () => (dispatch) => {
+  dispatch({ type: "clear_err" });
+};
+
+const getDataUser = (token) => {
+  return Db.get("/", {
+    headers: { authorization: token },
+  });
+};
+
+export const tryLocalSign = (callback, callbackLogin) => (dispatch) => {
+  AsyncStorage.getItem("auth")
+    .then(async (res) => {
+      if (!res) {
+        return callbackLogin();
+      }
+
+      const dataUser = await getDataUser(res);
+
+      dispatch({
+        type: "login_success",
+        payload: { token: res, user: dataUser.data },
+      });
+      return callback();
+    })
+    .catch((err) => {
+      console.log("try local sign", err);
+    });
+};
+
+export const signout = (callback) => async (dispatch) => {
+  await AsyncStorage.removeItem("auth").then(() => {
+    dispatch({ type: "signout" });
+    callback();
+  });
 };

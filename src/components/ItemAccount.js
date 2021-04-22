@@ -1,11 +1,10 @@
 import React from "react";
 import { View, StyleSheet, TouchableOpacity, Text, Modal } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-
-const ItemAccount = (props) => {
-  onPressLogout = () => {
-    props.navigation.navigate("Login");
-  };
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { signout } from "../Context/Action/Action";
+const ItemAccount = ({ signout, navigation }) => {
   return (
     <View style={styles.container}>
       {/* <TouchableOpacity style={styles.buttonEdit}>
@@ -14,7 +13,7 @@ const ItemAccount = (props) => {
         </TouchableOpacity> */}
       <TouchableOpacity
         style={styles.buttonLogout}
-        onPress={() => onPressLogout()}
+        onPress={() => signout(() => navigation.navigate("Login"))}
       >
         <Icon name="logout" size={30} color="#57419D" />
         <Text>Logout</Text>
@@ -23,7 +22,9 @@ const ItemAccount = (props) => {
   );
 };
 
-export default ItemAccount;
+const mapDispatchToProps = (dispatch) =>
+  bindActionCreators({ signout }, dispatch);
+export default connect(null, mapDispatchToProps)(ItemAccount);
 
 const styles = StyleSheet.create({
   container: {

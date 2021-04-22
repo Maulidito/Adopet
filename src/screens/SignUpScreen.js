@@ -8,20 +8,32 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import axios from "axios";
+
 import { Picker } from "@react-native-picker/picker";
-import FlashMessage, { showMessage } from "react-native-flash-message";
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import { onSignup, clearErrorMessage } from "../Context/Action/Action";
 
 const screenHeight = Dimensions.get("screen").height;
-const SignUpScreen = (props) => {
-  const [name, setName] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [Description, setDescription] = useState("");
-  const [sex, setSex] = useState("Male");
-  const [favorite, setFavorite] = useState("Cat");
+const SignUpScreen = ({
+  onSignup,
+  errMessage,
+  navigation,
+  clearErrorMessage,
+}) => {
 
-  console.disableYellowBox = true;
+  const [data, setData] = useState({
+    name: "",
+    username: "",
+    password: "",
+    Description: "",
+    sex: "Male",
+    favorite: "Cat",
+  });
+
+  navigation.addListener("blur", () => {
+    clearErrorMessage();
+  });
 
   return (
     <ScrollView style={styles.container}>
@@ -31,21 +43,21 @@ const SignUpScreen = (props) => {
           placeholder="Your Name"
           style={styles.bodyInputText}
           onChangeText={(text) => {
-            setName(text);
+            setData({ ...data, name: text });
           }}
         />
         <TextInput
           placeholder="User Name"
           style={styles.bodyInputText}
           onChangeText={(text) => {
-            setUsername(text);
+            setData({ ...data, username: text });
           }}
         />
         <TextInput
           placeholder="Password"
           style={styles.bodyInputText}
           onChangeText={(text) => {
-            setPassword(text);
+            setData({ ...data, password: text });
           }}
           secureTextEntry={true}
         />
@@ -55,16 +67,16 @@ const SignUpScreen = (props) => {
           multiline={true}
           maxLength={120}
           onChangeText={(text) => {
-            setDescription(text);
+            setData({ ...data, Description: text });
           }}
         />
         <Text style={styles.bodyTitleInput}>Gender</Text>
         <Picker
           style={styles.bodyInputText}
           onValueChange={(text) => {
-            setSex(text);
+            setData({ ...data, sex: text });
           }}
-          selectedValue={sex}
+          selectedValue={data.sex}
         >
           <Picker.Item label="Male" value="Male" />
           <Picker.Item label="Female" value="Female" />
@@ -73,9 +85,9 @@ const SignUpScreen = (props) => {
         <Picker
           style={styles.bodyInputText}
           onValueChange={(text) => {
-            setFavorite(text);
+            setData({ ...data, favorite: text });
           }}
-          selectedValue={favorite}
+          selectedValue={data.favorite}
         >
           <Picker.Item label="Cat" value="Cat" />
           <Picker.Item label="Dog" value="Dog" />
@@ -85,56 +97,31 @@ const SignUpScreen = (props) => {
       </View>
 
       <View style={styles.footer}>
+        {errMessage ? (
+          <Text style={{ alignSelf: "center", color: "red" }}>
+            {errMessage}
+          </Text>
+        ) : null}
         <TouchableOpacity
           style={styles.footerButton}
           onPress={() => {
-            if (
-              name == "" ||
-              username == "" ||
-              password == "" ||
-              Description == ""
-            ) {
-              showMessage({
-                message: "Data cannot empty",
-                backgroundColor: "yellow",
-                color: "white",
-                duration: 2000,
-              });
-            } else {
-              InsertDatabase({ name, username, password, sex, favorite })
-                .then((res) => props.navigation.navigate("LoginScreen"))
-                .catch((err) => {
-                  console.log("error");
-                });
-            }
+            onSignup(data, () => {
+              navigation.navigate("LoginScreen");
+            });
           }}
         >
           <Text style={styles.footerButtonText}>Create Account</Text>
         </TouchableOpacity>
-        {
-          //<FlashMessage position="bottom" ref="SignUpScreen" />
-        }
       </View>
     </ScrollView>
   );
 };
 
-async function InsertDatabase(data) {
-  return await axios
-    .post("https://5ff7c7d610778b001704277d.mockapi.io/api/v1/users", data)
-    .then((res) =>
-      showMessage({
-        message: "Success",
-        backgroundColor: "green",
-        color: "white",
-        duration: 2000,
-        description: "Your account has been created",
-      })
-    )
-    .catch((err) => err);
-}
+const mapStateToProps = (state) => state;
+const mapDispatchToProps = (dispatch) =>
+  bindActionCreators({ onSignup, clearErrorMessage }, dispatch);
 
-export default SignUpScreen;
+export default connect(mapStateToProps, mapDispatchToProps)(SignUpScreen);
 
 const styles = StyleSheet.create({
   container: {
@@ -177,7 +164,6 @@ const styles = StyleSheet.create({
 
   footer: {
     flexGrow: 2,
-
     height: 100,
     paddingHorizontal: 20,
     justifyContent: "center",
