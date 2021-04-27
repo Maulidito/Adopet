@@ -15,15 +15,9 @@ import ModalItem from "../components/ModalItem";
 const Item = ({ item }) => {
   const [modalshow, setModalShow] = useState(false);
 
-  if (item.name == undefined) {
-    item.name = "Animals";
-  }
-  if (item.description == undefined) {
-    item.description = "Please take care of me :)";
-  }
-  if (item.sex == undefined) {
-    item.sex = "Unknown";
-  }
+  item.name ? null : (item.name = "Animals");
+  item.description ? null : (item.description = "Please take care of me :)");
+  item.sex ? null : (item.sex = "Unknown");
 
   return (
     <TouchableOpacity
@@ -43,12 +37,10 @@ const Item = ({ item }) => {
         <Image
           source={
             item.dataPictures[0]
-              ? { uri: item.dataPictures[0], scale: 1 }
+              ? { uri: item.dataPictures[0].ori, scale: 1 }
               : require("../images/Animal.png")
           }
-          style={
-            item.image ? styles.imageStyle : { width: "100%", height: "100%" }
-          }
+          style={styles.imageStyle}
         />
       </View>
       <View style={styles.contentBody}>

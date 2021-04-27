@@ -87,7 +87,6 @@ const LoginNav = () => {
 };
 const allReducer = combineReducers({ Reducer, ReducerAnimal });
 const reducer = createStore(allReducer, applyMiddleware(ReduxThunk));
-console.log(reducer.getState())
 
 const App = () => {
   return (

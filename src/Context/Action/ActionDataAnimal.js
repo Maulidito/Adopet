@@ -1,6 +1,6 @@
 import DataAnimal from "../../api/ApiDatabase";
 
-export const getAnimalData = (countData,callback) => (dispatch) => {
+export const getAnimalData = (countData, callback) => (dispatch) => {
   DataAnimal.get("", { params: { limit: countData } })
     .then(({ data }) => {
       const { included } = data;
@@ -28,6 +28,7 @@ export const getAnimalData = (countData,callback) => (dispatch) => {
           sex: sex,
           color: colorDetails,
           age: ageString,
+
           dataPictures: getDetailData(pictures, included, "pictures"),
           dataOrgs: getDetailData(orgs, included, "orgs"),
           dataLocations: getDetailData(locations, included, "locations"),
@@ -46,14 +47,19 @@ const getDetailData = (pictureID, included, dataName) => {
   let dataReturn = [];
 
   pictureID.map((val) => {
-    included.find(({ type, id, attributes }, index) => {
-      if (type != "pictures" && id == val.id) {
-        dataReturn = attributes;
-      } else if (type == dataName && id == val.id) {
-        dataReturn.push(attributes.original.url);
-      }
+    const { attributes } = included.find(({ id }) => {
+      return val.id === id;
     });
+    if (dataName != "pictures") {
+      dataReturn = attributes;
+    } else {
+      dataReturn.push({
+        ori: attributes.original.url,
+        small: attributes.small.url,
+      });
+    }
   });
+
   return dataReturn;
 };
 

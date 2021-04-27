@@ -18,18 +18,14 @@ const screenHeight = Dimensions.get("screen").height;
 const screenWidth = Dimensions.get("screen").width;
 
 const LoginScreen = ({
-  navigation,
   onLogin,
-  errMessage,
   clearErrorMessage,
+  errMessage,
+  navigation,
 }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
-  onSignUp = () => {
-    return navigation.navigate("SignUpScreen");
-  };
-
+ 
   navigation.addListener("blur", () => {
     clearErrorMessage();
   });
@@ -79,7 +75,7 @@ const LoginScreen = ({
         </TouchableOpacity>
         <Text style={styles.footerText}>
           Don't have an account?
-          <TouchableOpacity onPress={onSignUp}>
+          <TouchableOpacity onPress={() => navigation.navigate("SignUpScreen")}>
             <Text style={styles.footerTextSignUp}> Sign Up</Text>
           </TouchableOpacity>
         </Text>
@@ -87,7 +83,7 @@ const LoginScreen = ({
     </View>
   );
 };
-const mapStateToProps = (state) => state;
+const mapStateToProps = (state) => state.Reducer;
 const mapDispatchToProps = (dispatch) =>
   bindActionCreators({ onLogin, clearErrorMessage }, dispatch);
 

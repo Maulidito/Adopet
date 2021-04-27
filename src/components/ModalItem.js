@@ -8,46 +8,70 @@ import {
   Image,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  ImageBackground,
 } from "react-native";
 
 import React, { useState } from "react";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-
+import Icon from "react-native-vector-icons/MaterialIcons";
+import ModalImage from "./ModalImage";
 export default ModalItem = ({ modalshow, item, closeModal }) => {
-  return (
-    <Modal visible={modalshow} animationType="fade" transparent={true}>
-      <View style={styles.modalStyle}>
-        <View style={styles.modalBody}>
-          <View style={styles.modalContentImage}>
-            <ScrollView showsVerticalScrollIndicator={false}>
-              <Image
-                source={
-                  item.dataPictures[0]
-                    ? { uri: item.dataPictures[0], scale: 1 }
-                    : require("../images/Animal.png")
-                }
-                style={
-                  item.dataPictures[0]
-                    ? styles.modalImage
-                    : { width: 100, height: 100 }
-                }
-              />
-            </ScrollView>
-          </View>
-          <View style={styles.modalContentText}>
-            <Text style={styles.modalNameText}>{item.name}</Text>
-            <Text>{item.description}</Text>
-          </View>
+  const [fullImage, setFullImage] = useState(false);
 
-          <Icon
-            name="close-circle-outline"
-            size={30}
-            style={{ alignSelf: "flex-end", position: "absolute" }}
-            color="#7878AB"
-            onPress={() => {
-              closeModal();
+  return (
+    <Modal
+      visible={modalshow}
+      animationType="fade"
+      transparent={true}
+      onRequestClose={closeModal}
+    >
+      <View style={styles.modalStyle}>
+        <TouchableOpacity
+          style={styles.modalOutside}
+          onPress={() => {
+            closeModal();
+          }}
+        />
+        {item.dataPictures[0] ? (
+          <ModalImage
+            fullImage={fullImage}
+            item={item}
+            callback={() => {
+              setFullImage(false);
             }}
           />
+        ) : null}
+
+        <View style={styles.modalBody}>
+          <TouchableOpacity
+            style={styles.modalContentImage}
+            onPress={() => {
+              setFullImage(true);
+            }}
+            disabled={item.dataPictures[0] ? false : true}
+          >
+            <Image
+              source={
+                item.dataPictures[0]
+                  ? { uri: item.dataPictures[0].ori }
+                  : require("../images/Animal.png")
+              }
+              style={styles.modalImage}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.modalButtonDetail}
+            onPress={() => {
+              console.log("asd");
+            }}
+          >
+            <Icon name={"arrow-forward-ios"} color={"white"} size={30} />
+          </TouchableOpacity>
+          <View style={styles.modalContentText}>
+            <Text style={styles.modalNameText}>{item.name}</Text>
+            <ScrollView>
+              <Text textBreakStrategy={"highQuality"}>{item.description}</Text>
+            </ScrollView>
+          </View>
         </View>
       </View>
     </Modal>
@@ -55,6 +79,21 @@ export default ModalItem = ({ modalshow, item, closeModal }) => {
 };
 
 const styles = StyleSheet.create({
+  modalButtonDetail: {
+    position: "absolute",
+    alignSelf: "flex-end",
+    height: "60%",
+    width: "20%",
+    borderTopLeftRadius: 60,
+    borderBottomLeftRadius: 60,
+    alignItems: "flex-end",
+    justifyContent: "center",
+  },
+  modalOutside: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+  },
   modalStyle: {
     width: "100%",
     height: "100%",
@@ -75,12 +114,13 @@ const styles = StyleSheet.create({
     flex: 0.65,
     flexDirection: "row",
     borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: "flex-start",
+    justifyContent: "flex-start",
   },
   modalContentText: {
     paddingHorizontal: 10,
     backgroundColor: "white",
+    borderRadius: 10,
     flex: 0.45,
   },
   modalNameText: {
@@ -89,7 +129,7 @@ const styles = StyleSheet.create({
   },
   modalImage: {
     width: "100%",
-    height: 500,
+    height: "100%",
     borderTopRightRadius: 10,
     borderTopLeftRadius: 10,
   },

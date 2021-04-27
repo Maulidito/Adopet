@@ -13,10 +13,9 @@ export const onLogin = (data, callback) => async (dispatch, getState) => {
       callback();
     })
     .catch((err) => {
-      console.log("singin", err);
       dispatch({
         type: "failed",
-        payload: "username or password wrong",
+        payload: `Problem ${err}`,
       });
     });
 };
@@ -33,7 +32,7 @@ export const onSignup = (data, callback) => async (dispatch, getState) => {
     .catch((err) => {
       dispatch({
         type: "failed",
-        payload: "username already exist",
+        payload: `Problem ${err}`,
       });
     });
 };
@@ -64,7 +63,9 @@ export const tryLocalSign = (callback, callbackLogin) => (dispatch) => {
       return callback();
     })
     .catch((err) => {
-      console.log("try local sign", err);
+  
+      dispatch({ type: "failed", payload: `Problem ${err}` });
+      callbackLogin();
     });
 };
 

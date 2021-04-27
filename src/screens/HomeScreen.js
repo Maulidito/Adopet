@@ -12,9 +12,11 @@ import {
   Modal,
   Button,
   ActivityIndicator,
+  BackHandler,
+  Alert,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-//import { getAnimalData } from "../api/ApiDatabase";
+
 import Item from "../components/ItemHome";
 import { connect } from "react-redux";
 import { getAnimalData } from "../Context/Action/ActionDataAnimal";
@@ -23,7 +25,7 @@ import { bindActionCreators } from "redux";
 const screenWidth = Dimensions.get("screen").width;
 const screenHeight = Dimensions.get("screen").height;
 
-const HomeScreen = ({ Reducer, ReducerAnimal, getAnimalData }) => {
+const HomeScreen = ({ Reducer, ReducerAnimal, getAnimalData, navigation }) => {
   const { user } = Reducer;
   const { dataAnimal } = ReducerAnimal;
 
@@ -31,12 +33,34 @@ const HomeScreen = ({ Reducer, ReducerAnimal, getAnimalData }) => {
   const [countAllData, setCountAllData] = useState(50);
 
   const [animating, setAnimating] = useState(true);
+  const [loadingList, setLoadingList] = useState(false);
 
   useEffect(() => {
     getAnimalData(countAllData, () => {
       setAnimating(false);
     });
   }, [countAllData]);
+
+  BackHandler.addEventListener("hardwareBackPress", () => {
+    Alert.alert(
+      "Alert Exit app",
+      "Are you sure?",
+      [
+        {
+          text: "Exit",
+          onPress: () => BackHandler.exitApp(),
+          style: "default",
+        },
+        {
+          text: "Cancel",
+          onPress: () => true,
+          style: "cancel",
+        },
+      ],
+      { cancelable: true }
+    );
+    return true;
+  });
 
   return (
     <View style={styles.container}>
@@ -77,16 +101,31 @@ const HomeScreen = ({ Reducer, ReducerAnimal, getAnimalData }) => {
       </View>
 
       <View style={styles.body}>
+        <View style={styles.loadingStyle}>
+          <ActivityIndicator
+            animating={animating}
+            color="#7878AB"
+            size="large"
+          />
+        </View>
         <FlatList
           ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
           showsVerticalScrollIndicator={false}
           keyExtractor={(item, index) => index.toString()}
+          ListFooterComponent={() => (
+            <View style={{ height: 350, paddingTop: 20 }}>
+              <ActivityIndicator
+                animating={loadingList}
+                color="#7878AB"
+                size="large"
+              />
+            </View>
+          )}
           onEndReached={() => {
             if (countData > countAllData / 2) {
-              console.log("asdasdasdasd", countAllData, " ", countData);
               setCountAllData(countAllData + 50);
             }
-
+            setLoadingList(true);
             setCountData(countData + 10);
           }}
           onEndReachedThreshold={0.8}
@@ -95,14 +134,6 @@ const HomeScreen = ({ Reducer, ReducerAnimal, getAnimalData }) => {
             return <Item item={item} />;
           }}
         />
-
-        <View style={styles.loadingStyle}>
-          <ActivityIndicator
-            animating={animating}
-            color="#7878AB"
-            size="large"
-          />
-        </View>
       </View>
     </View>
   );
@@ -169,12 +200,14 @@ const styles = StyleSheet.create({
   },
   body: {
     paddingHorizontal: 25,
-    paddingBottom: 80,
   },
 
   loadingStyle: {
-    height: "50%",
+    height: screenWidth,
+    width: screenWidth,
     alignItems: "center",
     justifyContent: "center",
+
+    position: "absolute",
   },
 });
