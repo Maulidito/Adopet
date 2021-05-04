@@ -18,7 +18,7 @@ const StackNav = createMaterialTopTabNavigator();
 
 const ProfileScreen = ({ Reducer }) => {
   const { user } = Reducer;
-  console.log(user);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -38,7 +38,16 @@ const ProfileScreen = ({ Reducer }) => {
             style: styles.headerNav,
             activeTintColor: "white",
             labelStyle: styles.headerNavButton,
+            indicatorStyle: {
+              backgroundColor: "white",
+              marginBottom: 9,
+              marginHorizontal: 60,
+              width: 90,
+              height: 3,
+              borderRadius: 10,
+            },
           }}
+          ba
         >
           <StackNav.Screen
             name={"ItemProfile"}

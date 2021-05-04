@@ -14,34 +14,54 @@ import {
   ActivityIndicator,
   BackHandler,
   Alert,
+  Switch,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import Item from "../components/ItemHome";
 import { connect } from "react-redux";
-import { getAnimalData } from "../Context/Action/ActionDataAnimal";
+import {
+  getAnimalData,
+  getSpeciesAnimal,
+} from "../Context/Action/ActionDataAnimal";
 import { bindActionCreators } from "redux";
 
 const screenWidth = Dimensions.get("screen").width;
 const screenHeight = Dimensions.get("screen").height;
 
-const HomeScreen = ({ Reducer, ReducerAnimal, getAnimalData, navigation }) => {
+const HomeScreen = ({
+  Reducer,
+  ReducerAnimal,
+  getAnimalData,
+  getSpeciesAnimal,
+  navigation,
+}) => {
   const { user } = Reducer;
-  const { dataAnimal } = ReducerAnimal;
+  const { dataAnimal, pages, dataSpecies } = ReducerAnimal;
 
-  const [countData, setCountData] = useState(10);
-  const [countAllData, setCountAllData] = useState(50);
-
+  const [page, setPage] = useState(1);
+  const [visibleRefresh, setVisibleRefresh] = useState(false);
+  const [filter, setFilter] = useState(null);
+  const [refFlatlist, setRefFlatlist] = useState(null);
   const [animating, setAnimating] = useState(true);
   const [loadingList, setLoadingList] = useState(false);
 
-  useEffect(() => {
-    getAnimalData(countAllData, () => {
-      setAnimating(false);
-    });
-  }, [countAllData]);
+  const endLoading = () => {
+    setVisibleRefresh(false);
+    setAnimating(false);
+    setLoadingList(false);
+  };
 
-  BackHandler.addEventListener("hardwareBackPress", () => {
+  useEffect(() => {
+    console.log(page);
+    getAnimalData(page, visibleRefresh, endLoading, filter);
+  }, [page]);
+
+  useEffect(() => {
+    getSpeciesAnimal();
+  }, []);
+
+  const alert = () => {
     Alert.alert(
       "Alert Exit app",
       "Are you sure?",
@@ -60,7 +80,22 @@ const HomeScreen = ({ Reducer, ReducerAnimal, getAnimalData, navigation }) => {
       { cancelable: true }
     );
     return true;
-  });
+  };
+
+  navigation.addListener(
+    "focus",
+    () => {
+      BackHandler.addEventListener("hardwareBackPress", alert);
+    },
+    []
+  );
+  navigation.addListener(
+    "blur",
+    () => {
+      BackHandler.removeEventListener("hardwareBackPress", alert);
+    },
+    []
+  );
 
   return (
     <View style={styles.container}>
@@ -77,27 +112,39 @@ const HomeScreen = ({ Reducer, ReducerAnimal, getAnimalData, navigation }) => {
       </View>
 
       <View style={styles.headerList}>
-        <ScrollView
+        <FlatList
           style={styles.headerListScrollView}
           horizontal={true}
           showsHorizontalScrollIndicator={false}
-        >
-          <TouchableOpacity style={styles.headerListButton}>
-            <Text style={styles.headerListText}>Cat</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.headerListButton}>
-            <Text style={styles.headerListText}>Dog</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.headerListButton}>
-            <Text style={styles.headerListText}>Bird</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.headerListButton}>
-            <Text style={styles.headerListText}>Reptile</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.headerListButton}>
-            <Text style={styles.headerListText}>Other</Text>
-          </TouchableOpacity>
-        </ScrollView>
+          data={dataSpecies}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => {
+            return (
+              <TouchableOpacity
+                style={styles.headerListButton}
+                onPress={() => {
+                  setVisibleRefresh(true);
+                  setFilter(item);
+
+                  getAnimalData(
+                    1,
+                    true,
+                    () => {
+                      endLoading();
+                      refFlatlist.scrollToOffset({
+                        offset: 0,
+                        animated: true,
+                      });
+                    },
+                    item
+                  );
+                }}
+              >
+                <Text style={styles.headerListText}>{item}</Text>
+              </TouchableOpacity>
+            );
+          }}
+        ></FlatList>
       </View>
 
       <View style={styles.body}>
@@ -109,11 +156,14 @@ const HomeScreen = ({ Reducer, ReducerAnimal, getAnimalData, navigation }) => {
           />
         </View>
         <FlatList
+          ref={(ref) => {
+            setRefFlatlist(ref);
+          }}
           ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
           showsVerticalScrollIndicator={false}
           keyExtractor={(item, index) => index.toString()}
           ListFooterComponent={() => (
-            <View style={{ height: 350, paddingTop: 20 }}>
+            <View style={{ height: 350, paddingTop: 20, alignItems: "center" }}>
               <ActivityIndicator
                 animating={loadingList}
                 color="#7878AB"
@@ -122,16 +172,20 @@ const HomeScreen = ({ Reducer, ReducerAnimal, getAnimalData, navigation }) => {
             </View>
           )}
           onEndReached={() => {
-            if (countData > countAllData / 2) {
-              setCountAllData(countAllData + 50);
-            }
             setLoadingList(true);
-            setCountData(countData + 10);
+
+            setPage(page + 1);
           }}
           onEndReachedThreshold={0.8}
-          data={dataAnimal.slice(0, countData)}
+          data={dataAnimal}
+          refreshing={visibleRefresh}
+          onRefresh={() => {
+            setVisibleRefresh(true);
+            setFilter(null);
+            setPage(1);
+          }}
           renderItem={({ item }) => {
-            return <Item item={item} />;
+            return <Item item={item} navigation={navigation} />;
           }}
         />
       </View>
@@ -141,7 +195,7 @@ const HomeScreen = ({ Reducer, ReducerAnimal, getAnimalData, navigation }) => {
 
 const mapStateToProps = (state) => state;
 const mapDispatchToProps = (dispatch) =>
-  bindActionCreators({ getAnimalData }, dispatch);
+  bindActionCreators({ getAnimalData, getSpeciesAnimal }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);
 
@@ -179,7 +233,7 @@ const styles = StyleSheet.create({
     paddingRight: "50%",
   },
   headerList: {
-    paddingVertical: 10,
+    paddingTop: 10,
   },
   headerListScrollView: {
     flexDirection: "row",
@@ -199,6 +253,7 @@ const styles = StyleSheet.create({
     color: "#7878AB",
   },
   body: {
+    paddingTop: 10,
     paddingHorizontal: 25,
   },
 

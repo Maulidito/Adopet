@@ -1,8 +1,18 @@
 import DataAnimal from "../../api/ApiDatabase";
 
-export const getAnimalData = (countData, callback) => (dispatch) => {
-  DataAnimal.get("", { params: { limit: countData } })
+export const getAnimalData = (page, refresh, callback, filter) => async (
+  dispatch,
+  getState
+) => {
+  await DataAnimal.get(
+    filter ? `animals/search/available/${filter.toLowerCase()}` : "animals/",
+    {
+      params: { limit: 20, page: page },
+    }
+  )
     .then(({ data }) => {
+      const { pages } = data.meta;
+
       const { included } = data;
       const dataDetail = data.data;
       const dataFinalAnimal = [];
@@ -35,13 +45,19 @@ export const getAnimalData = (countData, callback) => (dispatch) => {
         });
       });
 
-      dispatch({ type: "get_animal", payload: dataFinalAnimal });
-      callback();
+      dispatch({
+        type: "get_animal",
+        payload: { status: refresh, data: dataFinalAnimal, pages: pages },
+      });
     })
     .catch((err) => {
-      console.log(err);
+      console.log(err, "err");
+      //callNewPages();
     });
+  callback();
 };
+
+//const getdata = async()=>{}
 
 const getDetailData = (pictureID, included, dataName) => {
   let dataReturn = [];
@@ -54,13 +70,36 @@ const getDetailData = (pictureID, included, dataName) => {
       dataReturn = attributes;
     } else {
       dataReturn.push({
-        ori: attributes.original.url,
-        small: attributes.small.url,
+        ori: attributes.original ? attributes.original.url : null,
+        small: attributes.small ? attributes.small.url : null,
       });
     }
   });
 
   return dataReturn;
 };
+
+export const resetAnimalData = () => (dispatch) => {
+  dispatch({ type: "reset" });
+};
+
+export const getSpeciesAnimal = () => async (dispatch) => {
+  await DataAnimal.get("animals/species", { params: { limit: 100 } })
+    .then(({ data: { data } }) => {
+      let species = [];
+      species = data.map(({ attributes }) => {
+        return attributes.plural;
+      });
+
+      dispatch({ type: "get_species", payload: species });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+// export const filterSpecies = (species) => async (dispatch) => {
+//   await DataAnimal.get();
+// };
 
 const checkData = (value) => (value ? value.data : []);

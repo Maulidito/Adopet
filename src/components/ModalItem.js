@@ -14,8 +14,11 @@ import {
 import React, { useState } from "react";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import ModalImage from "./ModalImage";
+import { useNavigation } from "@react-navigation/native";
+
 export default ModalItem = ({ modalshow, item, closeModal }) => {
   const [fullImage, setFullImage] = useState(false);
+  const navigation = useNavigation();
 
   return (
     <Modal
@@ -61,7 +64,8 @@ export default ModalItem = ({ modalshow, item, closeModal }) => {
           <TouchableOpacity
             style={styles.modalButtonDetail}
             onPress={() => {
-              console.log("asd");
+              closeModal();
+              navigation.navigate("DetailScreen",  item );
             }}
           >
             <Icon name={"arrow-forward-ios"} color={"white"} size={30} />

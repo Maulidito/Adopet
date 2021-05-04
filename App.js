@@ -12,14 +12,25 @@ import SignUpScreen from "./src/screens/SignUpScreen";
 import HomeScreen from "./src/screens/HomeScreen";
 import ProfileScreen from "./src/screens/ProfileScreen";
 import Reducer from "./src/Context/Reducer/Reducer";
+import DetailScreen from "./src/screens/DetailDataScreen";
 import ReduxThunk from "redux-thunk";
 import ReducerAnimal from "./src/Context/Reducer/ReducerAnimal";
 import ResolveAuthScreen from "./src/screens/ResolveAuthScreen";
 const Stack = createStackNavigator();
 const HomeStack = createMaterialBottomTabNavigator();
 const LoginStack = createStackNavigator();
+const DetailStack = createStackNavigator();
 
-const HomeNav = ({ route }) => {
+const HomeNav = () => {
+  return (
+    <DetailStack.Navigator headerMode="none" initialRouteName={"MainScreen"}>
+      <DetailStack.Screen component={MainNav} name={"MainScreen"} />
+      <DetailStack.Screen component={DetailScreen} name={"DetailScreen"} />
+    </DetailStack.Navigator>
+  );
+};
+
+const MainNav = ({ navigation, state }) => {
   return (
     <HomeStack.Navigator
       initialRouteName="HomeScreen"
@@ -38,7 +49,6 @@ const HomeNav = ({ route }) => {
       <HomeStack.Screen
         name="HomeScreen"
         component={HomeScreen}
-        initialParams={route.params}
         options={{
           tabBarIcon: ({ size, focused, color }) => {
             return (
@@ -57,7 +67,6 @@ const HomeNav = ({ route }) => {
       <HomeStack.Screen
         name="ProfileScreen"
         component={ProfileScreen}
-        initialParams={route.params}
         options={{
           tabBarIcon: ({ size, focused, color }) => {
             return (
@@ -95,6 +104,7 @@ const App = () => {
         <Stack.Navigator headerMode="none" initialRouteName={"auth"}>
           <Stack.Screen name="Login" component={LoginNav} />
           <Stack.Screen name="Home" component={HomeNav} />
+
           <Stack.Screen name="auth" component={ResolveAuthScreen} />
         </Stack.Navigator>
       </NavigationContainer>
