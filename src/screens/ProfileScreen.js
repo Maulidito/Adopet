@@ -38,16 +38,16 @@ const ProfileScreen = ({ Reducer }) => {
             style: styles.headerNav,
             activeTintColor: "white",
             labelStyle: styles.headerNavButton,
+
             indicatorStyle: {
               backgroundColor: "white",
               marginBottom: 9,
-              marginHorizontal: 60,
-              width: 90,
-              height: 3,
+              marginHorizontal: "13%",
+              width: 30,
+              height: "5%",
               borderRadius: 10,
             },
           }}
-          ba
         >
           <StackNav.Screen
             name={"ItemProfile"}

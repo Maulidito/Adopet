@@ -14,14 +14,12 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { onSignup, clearErrorMessage } from "../Context/Action/Action";
 
-const screenHeight = Dimensions.get("screen").height;
 const SignUpScreen = ({
   onSignup,
   errMessage,
   navigation,
   clearErrorMessage,
 }) => {
-
   const [data, setData] = useState({
     name: "",
     username: "",
@@ -31,9 +29,13 @@ const SignUpScreen = ({
     favorite: "Cat",
   });
 
-  navigation.addListener("blur", () => {
-    clearErrorMessage();
-  });
+  navigation.addListener(
+    "blur",
+    () => {
+      clearErrorMessage();
+    },
+    []
+  );
 
   return (
     <ScrollView style={styles.container}>
@@ -49,6 +51,9 @@ const SignUpScreen = ({
         <TextInput
           placeholder="User Name"
           style={styles.bodyInputText}
+          keyboardType="email-address"
+          textContentType="emailAddress"
+          returnKeyType="google"
           onChangeText={(text) => {
             setData({ ...data, username: text });
           }}
@@ -117,7 +122,7 @@ const SignUpScreen = ({
   );
 };
 
-const mapStateToProps = (state) => state;
+const mapStateToProps = (state) => state.Reducer;
 const mapDispatchToProps = (dispatch) =>
   bindActionCreators({ onSignup, clearErrorMessage }, dispatch);
 

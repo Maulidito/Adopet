@@ -1,6 +1,5 @@
 const initial = {
   errMessage: "",
-  token: "",
   user: {},
 };
 const reducer = (state = initial, action) => {
@@ -8,11 +7,11 @@ const reducer = (state = initial, action) => {
     case "login_success": {
       return {
         ...state,
-        user: action.payload.user,
-        token: action.payload.token,
+        user: action.payload,
       };
     }
     case "failed": {
+    
       return { ...state, errMessage: action.payload };
     }
     case "clear_err": {

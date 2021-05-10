@@ -26,7 +26,10 @@ const DetailDataOrgs = ({ route }) => {
   route.params;
   return (
     <View style={styles.containerStyle}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={styles.scrollViewStyle}
+      >
         <Card>
           <Text style={styles.titleStyle}>{name}</Text>
           <Text style={styles.title2Style}>
@@ -66,7 +69,8 @@ const DetailDataOrgs = ({ route }) => {
   );
 };
 const styles = StyleSheet.create({
-  containerStyle: { paddingHorizontal: 20, height: 400 },
+  containerStyle: { height: "40%" },
+  scrollViewStyle: { paddingHorizontal: 20, width: "100%" },
   titleStyle: { fontSize: 25 },
   title2Style: { fontSize: 20 },
   descriptionStyle: { lineHeight: 15, fontSize: 15 },

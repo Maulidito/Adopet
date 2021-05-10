@@ -51,8 +51,8 @@ export const getAnimalData = (page, refresh, callback, filter) => async (
       });
     })
     .catch((err) => {
-      console.log(err, "err");
-      //callNewPages();
+      console.log(err, filter);
+      dispatch({ type: "failed", payload: "Not Found" });
     });
   callback();
 };
@@ -94,8 +94,12 @@ export const getSpeciesAnimal = () => async (dispatch) => {
       dispatch({ type: "get_species", payload: species });
     })
     .catch((err) => {
-      console.log(err);
+      console.log(err, "erer");
     });
+};
+
+export const clear_err = () => (dispatch) => {
+  dispatch({ type: "clear_err" });
 };
 
 // export const filterSpecies = (species) => async (dispatch) => {

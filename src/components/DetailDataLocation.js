@@ -75,8 +75,13 @@ const DetailDataLocation = ({ route }) => {
 };
 
 const styles = StyleSheet.create({
-  containerStyle: { alignItems: "center", marginHorizontal: 20, height: 400 },
-  scrollViewStyle: { width: "90%" },
+  containerStyle: {
+    alignItems: "center",
+
+    height: "40%",
+  },
+  paddingContentStyle: { marginHorizontal: 20 },
+  scrollViewStyle: { width: "100%", paddingHorizontal: 20 },
   MapViewStyle: { width: "100%", height: 250, marginVertical: 20 },
   titleCardStyle: { alignSelf: "center" },
   itemCardStyle: { flexDirection: "row", justifyContent: "space-between" },

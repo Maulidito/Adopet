@@ -17,12 +17,13 @@ import {
   Switch,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-
+import firebase from "../firebase/firebaseConfig";
 import Item from "../components/ItemHome";
 import { connect } from "react-redux";
 import {
   getAnimalData,
   getSpeciesAnimal,
+  clear_err,
 } from "../Context/Action/ActionDataAnimal";
 import { bindActionCreators } from "redux";
 
@@ -34,10 +35,11 @@ const HomeScreen = ({
   ReducerAnimal,
   getAnimalData,
   getSpeciesAnimal,
+  clear_err,
   navigation,
 }) => {
   const { user } = Reducer;
-  const { dataAnimal, pages, dataSpecies } = ReducerAnimal;
+  const { dataAnimal, pages, dataSpecies, errMessage } = ReducerAnimal;
 
   const [page, setPage] = useState(1);
   const [visibleRefresh, setVisibleRefresh] = useState(false);
@@ -53,9 +55,11 @@ const HomeScreen = ({
   };
 
   useEffect(() => {
-    console.log(page);
-    getAnimalData(page, visibleRefresh, endLoading, filter);
-  }, [page]);
+    if (visibleRefresh || loadingList || animating) {
+      getAnimalData(page, visibleRefresh, endLoading, filter);
+      clear_err();
+    }
+  }, [loadingList, visibleRefresh]);
 
   useEffect(() => {
     getSpeciesAnimal();
@@ -106,9 +110,12 @@ const HomeScreen = ({
           style={styles.headerImageProfile}
         />
         <Text style={styles.headerTextUsername}>{user.name}</Text>
-        <TouchableOpacity style={styles.headerIconBell}>
-          <Icon name="bell-outline" size={20} color="#57419D" />
-        </TouchableOpacity>
+
+        <View style={styles.headerViewBell}>
+          <TouchableOpacity style={styles.headerIconBell}>
+            <Icon name="bell-outline" size={20} color="#57419D" />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={styles.headerList}>
@@ -125,19 +132,13 @@ const HomeScreen = ({
                 onPress={() => {
                   setVisibleRefresh(true);
                   setFilter(item);
-
-                  getAnimalData(
-                    1,
-                    true,
-                    () => {
-                      endLoading();
-                      refFlatlist.scrollToOffset({
+                  setPage(1);
+                  refFlatlist
+                    ? refFlatlist.scrollToOffset({
                         offset: 0,
                         animated: true,
-                      });
-                    },
-                    item
-                  );
+                      })
+                    : null;
                 }}
               >
                 <Text style={styles.headerListText}>{item}</Text>
@@ -155,6 +156,13 @@ const HomeScreen = ({
             size="large"
           />
         </View>
+        {errMessage
+          ? errorNotFound(errMessage, filter, () => {
+              setVisibleRefresh(true);
+              setFilter(null);
+              setPage(1);
+            })
+          : null}
         <FlatList
           ref={(ref) => {
             setRefFlatlist(ref);
@@ -173,7 +181,6 @@ const HomeScreen = ({
           )}
           onEndReached={() => {
             setLoadingList(true);
-
             setPage(page + 1);
           }}
           onEndReachedThreshold={0.8}
@@ -194,8 +201,29 @@ const HomeScreen = ({
 };
 
 const mapStateToProps = (state) => state;
+
 const mapDispatchToProps = (dispatch) =>
-  bindActionCreators({ getAnimalData, getSpeciesAnimal }, dispatch);
+  bindActionCreators({ getAnimalData, getSpeciesAnimal, clear_err }, dispatch);
+
+const errorNotFound = (errMessage, filter, onRefresh) => {
+  return (
+    <View
+      style={{
+        alignItems: "center",
+        justifyContent: "center",
+        height: "90%",
+        position: "absolute",
+
+        alignSelf: "center",
+      }}
+    >
+      {filter ? <Text>{`${errMessage} Animal Species ${filter}`}</Text> : null}
+
+      <Icon name="arrow-down" size={40} color="black" />
+      <Text>Pull Down to Refresh</Text>
+    </View>
+  );
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);
 
@@ -211,6 +239,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 24,
   },
+  headerViewBell: { flex: 1, alignItems: "flex-end" },
   headerIconBell: {
     backgroundColor: "white",
     width: 40,
@@ -228,9 +257,8 @@ const styles = StyleSheet.create({
     borderColor: "white",
   },
   headerTextUsername: {
+    paddingLeft: 10,
     fontSize: 14,
-    paddingLeft: 12,
-    paddingRight: "50%",
   },
   headerList: {
     paddingTop: 10,
