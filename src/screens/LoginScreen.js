@@ -25,7 +25,7 @@ const LoginScreen = ({
 }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
- 
+
   navigation.addListener("blur", () => {
     clearErrorMessage();
   });
@@ -66,9 +66,7 @@ const LoginScreen = ({
         <TouchableOpacity
           style={styles.footerButton}
           onPress={() => {
-            onLogin({ username, password }, (data) =>
-              navigation.navigate("Home", data)
-            );
+            onLogin({ username, password });
           }}
         >
           <Text style={styles.footerButtonText}>LOGIN</Text>

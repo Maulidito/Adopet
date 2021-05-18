@@ -3,16 +3,9 @@ import { firebase } from "../../firebase/firebaseConfig";
 export const onLogin = (data, callback) => async (dispatch, getState) => {
   const { username, password } = data;
 
-  await firebase.default
+  const uid = await firebase.default
     .auth()
     .signInWithEmailAndPassword(username, password)
-    .then(({ user }) => {
-      dispatch({
-        type: "login_success",
-        payload: user,
-      });
-      callback();
-    })
     .catch((err) => {
       dispatch({ type: "failed", payload: `Problem ${err}` });
     });
@@ -57,6 +50,7 @@ export const clearErrorMessage = () => (dispatch) => {
 };
 
 export const tryLocalSign = (callback, callbackLogin) => async (dispatch) => {
+  //Tempat mengatur account login dan logout
   const userRef = firebase.default.firestore().collection("users");
   await firebase.default.auth().onAuthStateChanged(async (user) => {
     if (user) {
@@ -81,15 +75,29 @@ export const tryLocalSign = (callback, callbackLogin) => async (dispatch) => {
   });
 };
 
-export const signout = (callback) => async (dispatch) => {
+export const signout = () => async (dispatch) => {
   await firebase.default
     .auth()
     .signOut()
     .then(() => {
-      callback();
       dispatch({ type: "signout" });
     })
     .catch((err) => {
       console.log(err);
+    });
+};
+
+export const onEdit = (user, callback) => async (dispatch) => {
+  await firebase.default
+    .firestore()
+    .collection("users")
+    .doc(user.uid)
+    .set(user)
+    .then(() => {
+      dispatch({ type: "login_success", payload: user });
+      callback();
+    })
+    .catch((err) => {
+      console.log("error onEdit", err);
     });
 };

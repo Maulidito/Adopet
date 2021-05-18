@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useRef } from "react";
 import {
-  Image,
   View,
   StyleSheet,
   Text,
-  TouchableOpacity,
   StatusBar,
+  Animated,
+  Dimensions,
 } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
@@ -13,21 +13,72 @@ import ItemProfile from "../components/ItemProfile";
 import ItemAccount from "../components/ItemAccount";
 
 import { connect } from "react-redux";
+import SignUpScreen from "./SignUpScreen";
 
 const StackNav = createMaterialTopTabNavigator();
 
 const ProfileScreen = ({ Reducer }) => {
   const { user } = Reducer;
+  const headerAnim = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
+  const imageAnim = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
+  const textAnim = useRef(new Animated.Value(1)).current;
+
+  const springUpAnim = () => {
+    Animated.spring(headerAnim, {
+      toValue: { x: 0, y: -100 },
+      useNativeDriver: true,
+    }).start();
+
+    Animated.spring(imageAnim, {
+      toValue: { x: 0, y: 55 },
+
+      useNativeDriver: true,
+    }).start();
+
+    Animated.timing(textAnim, {
+      toValue: 0,
+      duration: 100,
+      useNativeDriver: false,
+    }).start();
+  };
+  const springDownAnim = () => {
+    Animated.spring(headerAnim, {
+      toValue: { x: 0, y: 0 },
+      useNativeDriver: true,
+    }).start();
+
+    Animated.spring(imageAnim, {
+      toValue: { x: 0, y: 0 },
+      useNativeDriver: true,
+    }).start();
+
+    Animated.timing(textAnim, {
+      toValue: 1,
+      duration: 100,
+      useNativeDriver: false,
+    }).start();
+  };
 
   return (
-    <View style={styles.container}>
+    <Animated.View
+      style={{
+        ...styles.container,
+        transform: headerAnim.getTranslateTransform(),
+      }}
+    >
       <View style={styles.header}>
         <View style={styles.headerProfile}>
-          <Image
+          <Animated.Image
             source={require("../images/Example_Profile.jpg")}
-            style={styles.headerImage}
-          ></Image>
-          <Text style={styles.headerName}>{user.name}</Text>
+            style={{
+              ...styles.headerImage,
+              transform: imageAnim.getTranslateTransform(),
+            }}
+          />
+
+          <Animated.Text style={{ ...styles.headerName, opacity: textAnim }}>
+            {user.name}
+          </Animated.Text>
         </View>
       </View>
       <View style={styles.tab}>
@@ -53,6 +104,7 @@ const ProfileScreen = ({ Reducer }) => {
             name={"ItemProfile"}
             component={ItemProfile}
             options={{ title: "Profile" }}
+            initialParams={{ springUpAnim, springDownAnim }}
           />
           <StackNav.Screen
             name={"ItemAccount"}
@@ -61,7 +113,7 @@ const ProfileScreen = ({ Reducer }) => {
           />
         </StackNav.Navigator>
       </View>
-    </View>
+    </Animated.View>
   );
 };
 

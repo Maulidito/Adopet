@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState, useEffect } from "react";
+import React, { useLayoutEffect, useState, useEffect, useRef } from "react";
 import {
   View,
   StyleSheet,
@@ -15,7 +15,9 @@ import {
   BackHandler,
   Alert,
   Switch,
+  Animated,
 } from "react-native";
+import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import firebase from "../firebase/firebaseConfig";
 import Item from "../components/ItemHome";
@@ -39,7 +41,8 @@ const HomeScreen = ({
   navigation,
 }) => {
   const { user } = Reducer;
-  const { dataAnimal, pages, dataSpecies, errMessage } = ReducerAnimal;
+
+  const { dataAnimal, dataSpecies, errMessage } = ReducerAnimal;
 
   const [page, setPage] = useState(1);
   const [visibleRefresh, setVisibleRefresh] = useState(false);
@@ -47,8 +50,20 @@ const HomeScreen = ({
   const [refFlatlist, setRefFlatlist] = useState(null);
   const [animating, setAnimating] = useState(true);
   const [loadingList, setLoadingList] = useState(false);
+  const [loadingHeader, setLoadingHeader] = useState(true);
+
+  const speciesAnim = useRef(new Animated.Value(0)).current;
+
+  const itemAnim = useRef(
+    new Animated.ValueXY({ x: 0, y: Dimensions.get("screen").height })
+  ).current;
 
   const endLoading = () => {
+    Animated.spring(itemAnim, {
+      useNativeDriver: "true",
+      toValue: { x: 0, y: 0 },
+      bounciness: 100,
+    }).start();
     setVisibleRefresh(false);
     setAnimating(false);
     setLoadingList(false);
@@ -62,7 +77,14 @@ const HomeScreen = ({
   }, [loadingList, visibleRefresh]);
 
   useEffect(() => {
-    getSpeciesAnimal();
+    getSpeciesAnimal(() => {
+      setLoadingHeader(false);
+      Animated.timing(speciesAnim, {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: "false",
+      }).start();
+    });
   }, []);
 
   const alert = () => {
@@ -119,33 +141,47 @@ const HomeScreen = ({
       </View>
 
       <View style={styles.headerList}>
-        <FlatList
-          style={styles.headerListScrollView}
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          data={dataSpecies}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => {
-            return (
-              <TouchableOpacity
-                style={styles.headerListButton}
-                onPress={() => {
-                  setVisibleRefresh(true);
-                  setFilter(item);
-                  setPage(1);
-                  refFlatlist
-                    ? refFlatlist.scrollToOffset({
-                        offset: 0,
-                        animated: true,
-                      })
-                    : null;
-                }}
-              >
-                <Text style={styles.headerListText}>{item}</Text>
-              </TouchableOpacity>
-            );
-          }}
-        ></FlatList>
+        {loadingHeader ? (
+          <SkeletonPlaceholder>
+            <View style={styles.loadingContainerHeader}>
+              <View style={styles.loadingItemHeader} />
+              <View style={styles.loadingItemHeader} />
+              <View style={styles.loadingItemHeader} />
+              <View style={styles.loadingItemHeader} />
+            </View>
+          </SkeletonPlaceholder>
+        ) : (
+          <Animated.FlatList
+            style={{
+              ...styles.headerListScrollView,
+              opacity: speciesAnim,
+            }}
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            data={dataSpecies}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => {
+              return (
+                <TouchableOpacity
+                  style={styles.headerListButton}
+                  onPress={() => {
+                    setVisibleRefresh(true);
+                    setFilter(item);
+                    setPage(1);
+                    refFlatlist
+                      ? refFlatlist.scrollToOffset({
+                          offset: 0,
+                          animated: true,
+                        })
+                      : null;
+                  }}
+                >
+                  <Text style={styles.headerListText}>{item}</Text>
+                </TouchableOpacity>
+              );
+            }}
+          />
+        )}
       </View>
 
       <View style={styles.body}>
@@ -163,7 +199,8 @@ const HomeScreen = ({
               setPage(1);
             })
           : null}
-        <FlatList
+        <Animated.FlatList
+          style={{ transform: itemAnim.getTranslateTransform() }}
           ref={(ref) => {
             setRefFlatlist(ref);
           }}
@@ -179,7 +216,7 @@ const HomeScreen = ({
               />
             </View>
           )}
-          onEndReached={() => {
+          onEndReached={({ distanceFromEnd }) => {
             setLoadingList(true);
             setPage(page + 1);
           }}
@@ -207,16 +244,7 @@ const mapDispatchToProps = (dispatch) =>
 
 const errorNotFound = (errMessage, filter, onRefresh) => {
   return (
-    <View
-      style={{
-        alignItems: "center",
-        justifyContent: "center",
-        height: "90%",
-        position: "absolute",
-
-        alignSelf: "center",
-      }}
-    >
+    <View style={styles.errorNotFoundStyle}>
       {filter ? <Text>{`${errMessage} Animal Species ${filter}`}</Text> : null}
 
       <Icon name="arrow-down" size={40} color="black" />
@@ -230,8 +258,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);
 const styles = StyleSheet.create({
   container: {
     flexDirection: "column",
-    height: screenHeight,
-    paddingTop: StatusBar.currentHeight * 2,
+    paddingTop: "10%",
   },
   headerProfile: {
     flexDirection: "row",
@@ -292,5 +319,24 @@ const styles = StyleSheet.create({
     justifyContent: "center",
 
     position: "absolute",
+  },
+  loadingItemHeader: {
+    width: 80,
+    height: 30,
+    borderRadius: 20,
+    marginHorizontal: 10,
+  },
+  loadingContainerHeader: {
+    flexDirection: "row",
+    alignContent: "space-between",
+    marginTop: "5%",
+  },
+  errorNotFoundStyle: {
+    alignItems: "center",
+    justifyContent: "center",
+    height: "90%",
+    position: "absolute",
+
+    alignSelf: "center",
   },
 });

@@ -11,7 +11,6 @@ const reducer = (state = initial, action) => {
       };
     }
     case "failed": {
-    
       return { ...state, errMessage: action.payload };
     }
     case "clear_err": {

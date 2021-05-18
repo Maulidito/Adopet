@@ -12,6 +12,8 @@ export const getAnimalData = (page, refresh, callback, filter) => async (
   )
     .then(({ data }) => {
       const { pages } = data.meta;
+      if (pages == 0) throw "failed";
+      if (pages < page) throw "End";
 
       const { included } = data;
       const dataDetail = data.data;
@@ -47,12 +49,12 @@ export const getAnimalData = (page, refresh, callback, filter) => async (
 
       dispatch({
         type: "get_animal",
-        payload: { status: refresh, data: dataFinalAnimal, pages: pages },
+        payload: { status: refresh, data: dataFinalAnimal },
       });
     })
     .catch((err) => {
       console.log(err, filter);
-      dispatch({ type: "failed", payload: "Not Found" });
+      dispatch({ type: err, payload: "Not Found" });
     });
   callback();
 };
@@ -83,7 +85,7 @@ export const resetAnimalData = () => (dispatch) => {
   dispatch({ type: "reset" });
 };
 
-export const getSpeciesAnimal = () => async (dispatch) => {
+export const getSpeciesAnimal = (callback) => async (dispatch) => {
   await DataAnimal.get("animals/species", { params: { limit: 100 } })
     .then(({ data: { data } }) => {
       let species = [];
@@ -92,6 +94,7 @@ export const getSpeciesAnimal = () => async (dispatch) => {
       });
 
       dispatch({ type: "get_species", payload: species });
+      callback();
     })
     .catch((err) => {
       console.log(err, "erer");

@@ -26,6 +26,7 @@ const HomeNav = () => {
     <DetailStack.Navigator headerMode="none" initialRouteName={"MainScreen"}>
       <DetailStack.Screen component={MainNav} name={"MainScreen"} />
       <DetailStack.Screen component={DetailScreen} name={"DetailScreen"} />
+      <DetailStack.Screen component={SignUpScreen} name={"EditAccScreen"} />
     </DetailStack.Navigator>
   );
 };

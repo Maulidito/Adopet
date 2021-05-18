@@ -12,22 +12,31 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { onSignup, clearErrorMessage } from "../Context/Action/Action";
+import { onEdit, onSignup, clearErrorMessage } from "../Context/Action/Action";
 
 const SignUpScreen = ({
+  onEdit,
   onSignup,
   errMessage,
   navigation,
   clearErrorMessage,
+  user,
+  route,
 }) => {
-  const [data, setData] = useState({
-    name: "",
-    username: "",
-    password: "",
-    Description: "",
-    sex: "Male",
-    favorite: "Cat",
-  });
+  console.log(route);
+  const { toastAnim } = route.params;
+  const [data, setData] = useState(
+    user
+      ? user
+      : {
+          name: "",
+          username: "",
+          password: "",
+          Description: "",
+          sex: "Male",
+          favorite: "Cat",
+        }
+  );
 
   navigation.addListener(
     "blur",
@@ -40,9 +49,12 @@ const SignUpScreen = ({
   return (
     <ScrollView style={styles.container}>
       <View style={styles.headernBody}>
-        <Text style={styles.headerTitle}>Create Account</Text>
+        <Text style={styles.headerTitle}>
+          {user ? "Update Account" : "Create Account"}
+        </Text>
         <TextInput
           placeholder="Your Name"
+          value={data.name}
           style={styles.bodyInputText}
           onChangeText={(text) => {
             setData({ ...data, name: text });
@@ -52,6 +64,7 @@ const SignUpScreen = ({
           placeholder="User Name"
           style={styles.bodyInputText}
           keyboardType="email-address"
+          value={data.username}
           textContentType="emailAddress"
           returnKeyType="google"
           onChangeText={(text) => {
@@ -61,6 +74,7 @@ const SignUpScreen = ({
         <TextInput
           placeholder="Password"
           style={styles.bodyInputText}
+          value={data.password}
           onChangeText={(text) => {
             setData({ ...data, password: text });
           }}
@@ -70,6 +84,7 @@ const SignUpScreen = ({
           placeholder="Bio"
           style={styles.bodyinputBio}
           multiline={true}
+          value={data.Description}
           maxLength={120}
           onChangeText={(text) => {
             setData({ ...data, Description: text });
@@ -110,12 +125,19 @@ const SignUpScreen = ({
         <TouchableOpacity
           style={styles.footerButton}
           onPress={() => {
-            onSignup(data, () => {
-              navigation.navigate("LoginScreen");
-            });
+            user
+              ? onEdit(data, () => {
+                  navigation.pop();
+                  toastAnim();
+                })
+              : onSignup(data, () => {
+                  navigation.navigate("LoginScreen");
+                });
           }}
         >
-          <Text style={styles.footerButtonText}>Create Account</Text>
+          <Text style={styles.footerButtonText}>
+            {user ? "Update Account" : "Create Account"}
+          </Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -124,7 +146,7 @@ const SignUpScreen = ({
 
 const mapStateToProps = (state) => state.Reducer;
 const mapDispatchToProps = (dispatch) =>
-  bindActionCreators({ onSignup, clearErrorMessage }, dispatch);
+  bindActionCreators({ onEdit, onSignup, clearErrorMessage }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(SignUpScreen);
 

@@ -12,23 +12,20 @@ const ReducerAnimal = (state = inital, action) => {
         ? {
             ...state,
             dataAnimal: action.payload.data,
-            pages: action.payload.pages,
           }
         : {
             ...state,
             dataAnimal: [...state.dataAnimal, ...action.payload.data],
-            pages: action.payload.pages,
           };
 
     case "reset": {
       return { inital };
     }
     case "clear_err": {
-  
       return { ...state, errMessage: "" };
     }
     case "failed": {
-      return { ...state, errMessage: action.payload,dataAnimal:[] };
+      return { ...state, errMessage: action.payload, dataAnimal: [] };
     }
     case "get_species": {
       return { ...state, dataSpecies: action.payload };

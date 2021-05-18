@@ -7,10 +7,10 @@ import { tryLocalSign } from "../Context/Action/Action";
 const ResolveAuthScreen = ({ navigation, tryLocalSign }) => {
   useEffect(() => {
     tryLocalSign(
-      () => navigation.navigate("Home"),
-      () => navigation.navigate("Login")
+      () => navigation.replace("Home"),
+      () => navigation.replace("Login")
     );
-  },[]);
+  }, []);
   return null;
 };
 const styles = StyleSheet.create({});
