@@ -16,6 +16,8 @@ import {
   Alert,
   Switch,
   Animated,
+  PanResponder
+
 } from "react-native";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -27,6 +29,7 @@ import {
   getSpeciesAnimal,
   clear_err,
 } from "../Context/Action/ActionDataAnimal";
+
 import { bindActionCreators } from "redux";
 
 const screenWidth = Dimensions.get("screen").width;

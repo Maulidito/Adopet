@@ -7,6 +7,7 @@ import {
   Animated,
   Dimensions,
 } from "react-native";
+
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -20,7 +21,6 @@ const ItemAccount = ({ signout, navigation, user }) => {
   ).current;
 
   const toastAnim = () => {
-    console.log("toast");
     Animated.timing(editAnim, {
       toValue: { x: 0, y: heightScreen / 4 },
       useNativeDriver: true,

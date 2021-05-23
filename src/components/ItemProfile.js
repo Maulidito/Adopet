@@ -1,51 +1,115 @@
-import React, { useRef } from "react";
-import { View, StyleSheet, Text, Animated } from "react-native";
+import React, { useRef, useState } from "react";
+import { View, StyleSheet, Text, Animated, PanResponder } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import { set } from "react-native-reanimated";
 import { connect } from "react-redux";
 
 const ItemProfile = ({ Reducer, route }) => {
   const { springUpAnim, springDownAnim } = route.params;
   const { user } = Reducer;
-  const cardAnim = useRef(new Animated.Value(150)).current;
+  const cardAnim = useRef(new Animated.Value(200)).current;
+  const containerAnim = useRef(new Animated.Value(800)).current;
+  const [heightCard, setHeightCard] = useState(0);
+  const [enableScroll, setEnableScroll] = useState(false);
+  const [panResponderControl, setPanResponderControl] = useState(true);
+
+  const springUp = () => {
+    springUpAnim();
+    Animated.spring(cardAnim, {
+      toValue: heightCard,
+      useNativeDriver: false,
+    }).start();
+    Animated.timing(containerAnim, {
+      toValue: 850,
+      useNativeDriver: false,
+    }).start();
+    setEnableScroll(true);
+    setPanResponderControl(false);
+  };
+
+  const springDown = () => {
+    springDownAnim();
+    Animated.spring(cardAnim, {
+      toValue: 150,
+      useNativeDriver: false,
+    }).start();
+    Animated.timing(containerAnim, {
+      toValue: 800,
+      useNativeDriver: false,
+    }).start();
+    setEnableScroll(false);
+    setPanResponderControl(true);
+  };
+
+  const panResponder = PanResponder.create({
+    onStartShouldSetPanResponder: () => {
+      return panResponderControl;
+    },
+    onPanResponderMove: (event, gesture) => {
+      if (gesture.dy < -20) {
+        springUp();
+      }
+
+      if (gesture.dy > 20) {
+        springDown();
+      }
+    },
+    onPanResponderRelease: () => {},
+  });
 
   return (
-    <View style={styles.container}>
-      <Animated.View style={{ ...styles.card, height: cardAnim }}>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          onScroll={(event) => {
-            event.nativeEvent.contentOffset.y == 0
-              ? (springDownAnim(),
-                Animated.spring(cardAnim, {
-                  toValue: 150,
-                  useNativeDriver: false,
-                }).start())
-              : (springUpAnim(),
-                Animated.spring(cardAnim, {
-                  toValue: 200,
-                  useNativeDriver: false,
-                }).start());
-          }}
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      scrollEnabled={enableScroll}
+      onScrollEndDrag={(event) => {
+        if (
+          panResponderControl == false &&
+          event.nativeEvent.contentOffset.y == 0
+        ) {
+          springDown();
+        }
+      }}
+      onScroll={(event) => {
+        if (event.nativeEvent.contentOffset.y == 0) {
+          setPanResponderControl(true);
+        }
+      }}
+    >
+      <Animated.View
+        style={{
+          ...styles.container,
+          height: containerAnim,
+        }}
+        {...panResponder.panHandlers}
+      >
+        <Animated.View
+          style={{ ...styles.card, height: cardAnim, overflow: "hidden" }}
         >
-          <View style={styles.cardNameSection}>
-            <Text style={styles.cardTitleName}>Name</Text>
-            <Text> {user.name}</Text>
+          <View
+            onLayout={(event) => {
+              setHeightCard(event.nativeEvent.layout.height);
+            }}
+          >
+            <View style={styles.cardNameSection}>
+              <Text style={styles.cardTitleName}>Name</Text>
+              <Text> {user.name}</Text>
+            </View>
+            <View style={styles.cardNameSection}>
+              <Text style={styles.cardTitleName}>Gender</Text>
+              <Text> {user.sex}</Text>
+            </View>
+            <View style={{ ...styles.cardBioSection, maxHeight: 500 }}>
+              <Text style={styles.cardTitleName}>Bio</Text>
+              <Text numberOfLines={10}>{user.Description}</Text>
+            </View>
+            <View style={styles.cardNameSection}>
+              <Text style={styles.cardTitleName}>Favorite Pet</Text>
+              <Text> {user.favorite}</Text>
+            </View>
           </View>
-          <View style={styles.cardNameSection}>
-            <Text style={styles.cardTitleName}>Gender</Text>
-            <Text> {user.sex}</Text>
-          </View>
-          <View style={{ ...styles.cardBioSection, maxHeight: 500 }}>
-            <Text style={styles.cardTitleName}>Bio</Text>
-            <Text numberOfLines={10}>{user.Description}</Text>
-          </View>
-          <View style={styles.cardNameSection}>
-            <Text style={styles.cardTitleName}>Favorite Pet</Text>
-            <Text> {user.favorite}</Text>
-          </View>
-        </ScrollView>
+        </Animated.View>
       </Animated.View>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -55,11 +119,9 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 20,
     paddingVertical: 20,
-    height: 900,
   },
   card: {
     borderRadius: 10,
-
     backgroundColor: "white",
     elevation: 5,
     padding: 12,

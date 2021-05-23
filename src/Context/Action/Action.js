@@ -17,7 +17,9 @@ export const onSignup = (data, callback) => async (dispatch, getState) => {
     .createUserWithEmailAndPassword(data.username, data.password)
     .then((res) => {
       const { uid } = res.user;
+
       const userData = { ...data, uid: uid };
+      delete userData.password;
       return userData;
     })
     .catch((err) => {
@@ -27,6 +29,7 @@ export const onSignup = (data, callback) => async (dispatch, getState) => {
       });
     });
 
+    firebase.default.auth().
   user
     ? await firebase.default
         .firestore()
@@ -100,4 +103,6 @@ export const onEdit = (user, callback) => async (dispatch) => {
     .catch((err) => {
       console.log("error onEdit", err);
     });
+
+  firebase.default.auth().has;
 };

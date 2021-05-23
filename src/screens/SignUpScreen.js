@@ -23,10 +23,15 @@ const SignUpScreen = ({
   user,
   route,
 }) => {
-  console.log(route);
-  const { toastAnim } = route.params;
+  if (route.params) {
+    const { toastAnim } = route.params;
+  }
+  const isEmpty = (object) => {
+    return Object.keys(object).length == 0;
+  };
+
   const [data, setData] = useState(
-    user
+    !isEmpty(user)
       ? user
       : {
           name: "",
@@ -50,7 +55,7 @@ const SignUpScreen = ({
     <ScrollView style={styles.container}>
       <View style={styles.headernBody}>
         <Text style={styles.headerTitle}>
-          {user ? "Update Account" : "Create Account"}
+          {!isEmpty(user) ? "Update Account" : "Create Account"}
         </Text>
         <TextInput
           placeholder="Your Name"
@@ -125,7 +130,7 @@ const SignUpScreen = ({
         <TouchableOpacity
           style={styles.footerButton}
           onPress={() => {
-            user
+            !isEmpty(user)
               ? onEdit(data, () => {
                   navigation.pop();
                   toastAnim();
@@ -136,7 +141,7 @@ const SignUpScreen = ({
           }}
         >
           <Text style={styles.footerButtonText}>
-            {user ? "Update Account" : "Create Account"}
+            {!isEmpty(user) ? "Update Account" : "Create Account"}
           </Text>
         </TouchableOpacity>
       </View>

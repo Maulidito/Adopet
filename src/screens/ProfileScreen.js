@@ -6,6 +6,7 @@ import {
   StatusBar,
   Animated,
   Dimensions,
+  PanResponder,
 } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
@@ -19,20 +20,15 @@ const StackNav = createMaterialTopTabNavigator();
 
 const ProfileScreen = ({ Reducer }) => {
   const { user } = Reducer;
-  const headerAnim = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
-  const imageAnim = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
+  const tabAnim = useRef(new Animated.Value(0.6)).current;
+
   const textAnim = useRef(new Animated.Value(1)).current;
 
   const springUpAnim = () => {
-    Animated.spring(headerAnim, {
-      toValue: { x: 0, y: -100 },
-      useNativeDriver: true,
-    }).start();
-
-    Animated.spring(imageAnim, {
-      toValue: { x: 0, y: 55 },
-
-      useNativeDriver: true,
+    Animated.spring(tabAnim, {
+      toValue: 1.3,
+      useNativeDriver: false,
+      bounciness: 0,
     }).start();
 
     Animated.timing(textAnim, {
@@ -42,14 +38,10 @@ const ProfileScreen = ({ Reducer }) => {
     }).start();
   };
   const springDownAnim = () => {
-    Animated.spring(headerAnim, {
-      toValue: { x: 0, y: 0 },
-      useNativeDriver: true,
-    }).start();
-
-    Animated.spring(imageAnim, {
-      toValue: { x: 0, y: 0 },
-      useNativeDriver: true,
+    Animated.spring(tabAnim, {
+      toValue: 0.6,
+      bounciness: 0,
+      useNativeDriver: false,
     }).start();
 
     Animated.timing(textAnim, {
@@ -60,20 +52,12 @@ const ProfileScreen = ({ Reducer }) => {
   };
 
   return (
-    <Animated.View
-      style={{
-        ...styles.container,
-        transform: headerAnim.getTranslateTransform(),
-      }}
-    >
+    <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerProfile}>
           <Animated.Image
             source={require("../images/Example_Profile.jpg")}
-            style={{
-              ...styles.headerImage,
-              transform: imageAnim.getTranslateTransform(),
-            }}
+            style={styles.headerImage}
           />
 
           <Animated.Text style={{ ...styles.headerName, opacity: textAnim }}>
@@ -81,7 +65,7 @@ const ProfileScreen = ({ Reducer }) => {
           </Animated.Text>
         </View>
       </View>
-      <View style={styles.tab}>
+      <Animated.View style={{ ...styles.tab, flex: tabAnim }}>
         <StackNav.Navigator
           headerMode="none"
           initialRouteName="ItemProfile"
@@ -112,8 +96,8 @@ const ProfileScreen = ({ Reducer }) => {
             options={{ title: "Account" }}
           />
         </StackNav.Navigator>
-      </View>
-    </Animated.View>
+      </Animated.View>
+    </View>
   );
 };
 
@@ -129,7 +113,7 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: "#57419D",
-    flex: 0.9,
+    flex: 0.5,
     justifyContent: "center",
   },
   headerProfile: {
@@ -161,6 +145,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   tab: {
-    flex: 1,
+    flex: 0.6,
   },
 });

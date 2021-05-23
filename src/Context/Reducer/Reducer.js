@@ -17,7 +17,7 @@ const reducer = (state = initial, action) => {
       return { ...state, errMessage: initial.errMessage };
     }
     case "signout": {
-      return { ...state, initial };
+      return { ...state, ...initial };
     }
     default:
       return state;
