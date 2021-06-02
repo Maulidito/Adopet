@@ -6,13 +6,13 @@ import {
   StatusBar,
   Animated,
   Dimensions,
-  PanResponder,
+  TouchableOpacity,
 } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import ItemProfile from "../components/ItemProfile";
 import ItemAccount from "../components/ItemAccount";
-
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { connect } from "react-redux";
 import SignUpScreen from "./SignUpScreen";
 
@@ -26,7 +26,7 @@ const ProfileScreen = ({ Reducer }) => {
 
   const springUpAnim = () => {
     Animated.spring(tabAnim, {
-      toValue: 1.3,
+      toValue: 0.3,
       useNativeDriver: false,
       bounciness: 0,
     }).start();
@@ -53,19 +53,31 @@ const ProfileScreen = ({ Reducer }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <Animated.View style={{ ...styles.header, flex: tabAnim }}>
         <View style={styles.headerProfile}>
-          <Animated.Image
-            source={require("../images/Example_Profile.jpg")}
-            style={styles.headerImage}
-          />
+          <TouchableOpacity onPress={() => {}}>
+            <Animated.Image
+              source={require("../images/Example_Profile.jpg")}
+              style={styles.headerImage}
+            />
+            <Icon
+              name="image-edit-outline"
+              size={30}
+              style={{
+                position: "absolute",
+                bottom: 0,
+                alignSelf: "flex-end",
+              }}
+              color="white"
+            />
+          </TouchableOpacity>
 
           <Animated.Text style={{ ...styles.headerName, opacity: textAnim }}>
             {user.name}
           </Animated.Text>
         </View>
-      </View>
-      <Animated.View style={{ ...styles.tab, flex: tabAnim }}>
+      </Animated.View>
+      <View style={styles.tabStyle}>
         <StackNav.Navigator
           headerMode="none"
           initialRouteName="ItemProfile"
@@ -96,7 +108,7 @@ const ProfileScreen = ({ Reducer }) => {
             options={{ title: "Account" }}
           />
         </StackNav.Navigator>
-      </Animated.View>
+      </View>
     </View>
   );
 };
@@ -144,7 +156,7 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
   },
-  tab: {
-    flex: 0.6,
+  tabStyle: {
+    flex: 0.7,
   },
 });

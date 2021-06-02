@@ -17,7 +17,6 @@ export const onSignup = (data, callback) => async (dispatch, getState) => {
     .createUserWithEmailAndPassword(data.username, data.password)
     .then((res) => {
       const { uid } = res.user;
-
       const userData = { ...data, uid: uid };
       delete userData.password;
       return userData;
@@ -29,13 +28,12 @@ export const onSignup = (data, callback) => async (dispatch, getState) => {
       });
     });
 
-    firebase.default.auth().
-  user
+  firebase.default.auth().currentUser
     ? await firebase.default
         .firestore()
         .collection("users")
         .doc(user.uid)
-        .set(user)
+        .set({ ...user, liked: [] })
         .then(() => {
           callback();
         })
@@ -54,15 +52,17 @@ export const clearErrorMessage = () => (dispatch) => {
 
 export const tryLocalSign = (callback, callbackLogin) => async (dispatch) => {
   //Tempat mengatur account login dan logout
+
   const userRef = firebase.default.firestore().collection("users");
   await firebase.default.auth().onAuthStateChanged(async (user) => {
+    console.log("Masuk Percobaan");
     if (user) {
       await userRef
         .doc(user.uid)
         .get()
         .then((res) => {
           const userData = res.data();
-
+          console.log("LOgin Succes");
           dispatch({
             type: "login_success",
             payload: userData,
@@ -73,17 +73,20 @@ export const tryLocalSign = (callback, callbackLogin) => async (dispatch) => {
           dispatch({ type: "failed", payload: `Problem ${err}` });
         });
     } else {
+      console.log("Back TO LOGIN");
       callbackLogin();
     }
   });
 };
 
 export const signout = () => async (dispatch) => {
+  console.log("Proses signout");
   await firebase.default
     .auth()
     .signOut()
-    .then(() => {
-      dispatch({ type: "signout" });
+    .then((res) => {
+    
+      //dispatch({ type: "signout" });
     })
     .catch((err) => {
       console.log(err);

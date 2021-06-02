@@ -23,9 +23,8 @@ const SignUpScreen = ({
   user,
   route,
 }) => {
-  if (route.params) {
-    const { toastAnim } = route.params;
-  }
+  const toastAnim = route.params ? route.params.toastAnim : null;
+
   const isEmpty = (object) => {
     return Object.keys(object).length == 0;
   };

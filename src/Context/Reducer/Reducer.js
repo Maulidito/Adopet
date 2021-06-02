@@ -19,6 +19,15 @@ const reducer = (state = initial, action) => {
     case "signout": {
       return { ...state, ...initial };
     }
+    case "AddLiked": {
+      const array = [...state.user.liked, action.payload];
+      const userTemp = { ...state.user, liked: array };
+
+      return { ...state, user: userTemp };
+    }
+    case "unlike": {
+      return { ...state, ...user, liked: action.payload };
+    }
     default:
       return state;
   }

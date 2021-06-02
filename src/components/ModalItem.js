@@ -1,20 +1,18 @@
 import {
   Modal,
-  Button,
   View,
   StyleSheet,
   Text,
   ScrollView,
   Image,
   TouchableOpacity,
-  TouchableWithoutFeedback,
-  ImageBackground,
 } from "react-native";
 
 import React, { useState } from "react";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import ModalImage from "./ModalImage";
 import { useNavigation } from "@react-navigation/native";
+
 
 export default ModalItem = ({ modalshow, item, closeModal }) => {
   const [fullImage, setFullImage] = useState(false);
@@ -58,6 +56,7 @@ export default ModalItem = ({ modalshow, item, closeModal }) => {
                   ? { uri: item.dataPictures[0].ori }
                   : require("../images/Animal.png")
               }
+              
               style={styles.modalImage}
             />
           </TouchableOpacity>
@@ -65,7 +64,7 @@ export default ModalItem = ({ modalshow, item, closeModal }) => {
             style={styles.modalButtonDetail}
             onPress={() => {
               closeModal();
-              navigation.navigate("DetailScreen",  item );
+              navigation.navigate("DetailScreen", item);
             }}
           >
             <Icon name={"arrow-forward-ios"} color={"white"} size={30} />
@@ -120,6 +119,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "flex-start",
     justifyContent: "flex-start",
+    alignSelf: "center",
   },
   modalContentText: {
     paddingHorizontal: 10,

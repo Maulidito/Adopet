@@ -15,15 +15,13 @@ import { signout } from "../Context/Action/Action";
 
 const ItemAccount = ({ signout, navigation, user }) => {
   const heightScreen = Dimensions.get("screen").height;
-  const widthScreen = Dimensions.get("screen").width;
-  const editAnim = useRef(
-    new Animated.ValueXY({ x: 0, y: heightScreen / 2 })
-  ).current;
+
+  const editAnim = useRef(new Animated.Value(heightScreen)).current;
 
   const toastAnim = () => {
     Animated.timing(editAnim, {
-      toValue: { x: 0, y: heightScreen / 4 },
-      useNativeDriver: true,
+      toValue: heightScreen / 3,
+      useNativeDriver: false,
     }).start(() => {
       toastDown();
     });
@@ -31,8 +29,8 @@ const ItemAccount = ({ signout, navigation, user }) => {
 
   const toastDown = () => {
     Animated.timing(editAnim, {
-      toValue: { x: 0, y: heightScreen / 2 },
-      useNativeDriver: true,
+      toValue: heightScreen,
+      useNativeDriver: false,
       delay: 3000,
     }).start();
   };
@@ -57,8 +55,9 @@ const ItemAccount = ({ signout, navigation, user }) => {
       <Animated.View
         style={{
           position: "absolute",
-          transform: editAnim.getTranslateTransform(),
+          height: editAnim,
 
+          justifyContent: "flex-end",
           alignSelf: "center",
         }}
       >

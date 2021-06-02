@@ -1,8 +1,14 @@
 import React, { useRef, useState } from "react";
 import { View, StyleSheet, Text, Animated, PanResponder } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
-import { set } from "react-native-reanimated";
+import {
+  FlatList,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native-gesture-handler";
+import { bindActionCreators } from "redux";
+import { getLikedAnimal } from "../Context/Action/ActionDataAnimal";
 import { connect } from "react-redux";
+import ItemHome from "../components/ItemHome";
 
 const ItemProfile = ({ Reducer, route }) => {
   const { springUpAnim, springDownAnim } = route.params;
@@ -30,7 +36,7 @@ const ItemProfile = ({ Reducer, route }) => {
   const springDown = () => {
     springDownAnim();
     Animated.spring(cardAnim, {
-      toValue: 150,
+      toValue: 200,
       useNativeDriver: false,
     }).start();
     Animated.timing(containerAnim, {
@@ -75,13 +81,7 @@ const ItemProfile = ({ Reducer, route }) => {
         }
       }}
     >
-      <Animated.View
-        style={{
-          ...styles.container,
-          height: containerAnim,
-        }}
-        {...panResponder.panHandlers}
-      >
+      <View style={styles.container} {...panResponder.panHandlers}>
         <Animated.View
           style={{ ...styles.card, height: cardAnim, overflow: "hidden" }}
         >
@@ -108,12 +108,19 @@ const ItemProfile = ({ Reducer, route }) => {
             </View>
           </View>
         </Animated.View>
-      </Animated.View>
+
+        {user.liked.map((val, index) => {
+          getLikedAnimal(val).then((data) => {
+            //console.log(data);
+          });
+        })}
+      </View>
     </ScrollView>
   );
 };
 
 const mapStateToProps = (state) => state;
+
 export default connect(mapStateToProps, null)(ItemProfile);
 const styles = StyleSheet.create({
   container: {
@@ -125,7 +132,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     elevation: 5,
     padding: 12,
-    height: 150,
+    marginBottom: 20,
   },
   cardNameSection: {
     flexDirection: "row",

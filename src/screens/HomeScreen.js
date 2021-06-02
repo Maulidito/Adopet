@@ -16,8 +16,7 @@ import {
   Alert,
   Switch,
   Animated,
-  PanResponder
-
+  PanResponder,
 } from "react-native";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -232,7 +231,9 @@ const HomeScreen = ({
             setPage(1);
           }}
           renderItem={({ item }) => {
-            return <Item item={item} navigation={navigation} />;
+            
+            
+            return <Item item={item}  />;
           }}
         />
       </View>

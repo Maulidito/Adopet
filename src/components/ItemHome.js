@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -8,16 +8,25 @@ import {
   Modal,
   ActivityIndicator,
   Alert,
+  Touch,
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import ModalItem from "../components/ModalItem";
-const Item = ({ item }) => {
+import { LikeAnimal, unlikeAnimal } from "../Context/Action/ActionDataAnimal";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+const Item = ({ item, user, LikeAnimal, unlikeAnimal }) => {
   const [modalshow, setModalShow] = useState(false);
+  const [like, setLike] = useState(user.liked.includes(item.id));
 
+  useEffect(() => {
+    setLike(user.liked.includes(item.id));
+  }, [item]);
   item.name ? null : (item.name = "Animals");
   item.description ? null : (item.description = "Please take care of me :)");
   item.sex ? null : (item.sex = "Unknown");
+
 
   return (
     <TouchableOpacity
@@ -53,15 +62,31 @@ const Item = ({ item }) => {
       </View>
 
       <View style={styles.contentButton}>
-        <TouchableOpacity style={styles.contentButtonStyle}>
-          <Icon name="heart-outline" size={20} />
+        <TouchableOpacity
+          style={styles.contentButtonStyle}
+          onPress={() => {
+            setLike(!like);
+            like != true
+              ? LikeAnimal(user.uid, user.liked, item.id)
+              : unlikeAnimal(user.uid, user.liked, item.id);
+          }}
+        >
+          <Icon
+            name={like == true ? "heart" : "heart-outline"}
+            size={20}
+            color="red"
+          />
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
   );
 };
 
-export default Item;
+const mapStateToProps = (state) => state.Reducer;
+const mapDispatchToProps = (dispatch) =>
+  bindActionCreators({ LikeAnimal, unlikeAnimal }, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(Item);
 
 const styles = StyleSheet.create({
   container: {
