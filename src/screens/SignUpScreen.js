@@ -13,6 +13,7 @@ import { Picker } from "@react-native-picker/picker";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { onEdit, onSignup, clearErrorMessage } from "../Context/Action/Action";
+import { PrimaryColor } from "../components/Colors";
 
 const SignUpScreen = ({
   onEdit,
@@ -75,15 +76,17 @@ const SignUpScreen = ({
             setData({ ...data, username: text });
           }}
         />
-        <TextInput
-          placeholder="Password"
-          style={styles.bodyInputText}
-          value={data.password}
-          onChangeText={(text) => {
-            setData({ ...data, password: text });
-          }}
-          secureTextEntry={true}
-        />
+        {isEmpty(user) ? (
+          <TextInput
+            placeholder="Password"
+            style={styles.bodyInputText}
+            value={data.password}
+            onChangeText={(text) => {
+              setData({ ...data, password: text });
+            }}
+            secureTextEntry={true}
+          />
+        ) : null}
         <TextInput
           placeholder="Bio"
           style={styles.bodyinputBio}
@@ -156,7 +159,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(SignUpScreen);
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#57419D",
+    backgroundColor: PrimaryColor,
 
     flexDirection: "column",
   },

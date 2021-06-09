@@ -13,7 +13,7 @@ import {
   ImageBackground,
   LogBox,
 } from "react-native";
-
+import { PrimaryColor,BackgroundColor } from "../components/Colors";
 const screenHeight = Dimensions.get("screen").height;
 const screenWidth = Dimensions.get("screen").width;
 
@@ -32,7 +32,7 @@ const LoginScreen = ({
 
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor={"#57419D"} />
+      <StatusBar backgroundColor={PrimaryColor} />
       <ImageBackground
         source={require("../images/Login.png")}
         style={{ width: screenWidth, height: 120 }}
@@ -43,6 +43,7 @@ const LoginScreen = ({
 
       <View style={styles.body}>
         <TextInput
+          testID="txtiUsername"
           placeholder="Username"
           style={styles.bodyTextInput}
           onChangeText={(text) => {
@@ -50,6 +51,7 @@ const LoginScreen = ({
           }}
         />
         <TextInput
+          testID="txtiPassword"
           placeholder="Password"
           style={styles.bodyTextInput}
           secureTextEntry={true}
@@ -64,6 +66,7 @@ const LoginScreen = ({
 
       <View style={styles.footer}>
         <TouchableOpacity
+          testID="btnLogin"
           style={styles.footerButton}
           onPress={() => {
             onLogin({ username, password });
@@ -89,7 +92,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen);
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#F5F5FA",
+    backgroundColor: BackgroundColor,
     flexDirection: "column",
     height: screenHeight,
   },
@@ -120,7 +123,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   footerButton: {
-    backgroundColor: "#57419D",
+    backgroundColor: PrimaryColor,
     borderRadius: 5,
     height: 60,
     justifyContent: "center",
@@ -135,7 +138,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   footerTextSignUp: {
-    color: "#57419D",
+    color: PrimaryColor,
   },
   errMessageStyle: {
     alignSelf: "center",

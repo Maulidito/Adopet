@@ -20,13 +20,16 @@ const reducer = (state = initial, action) => {
       return { ...state, ...initial };
     }
     case "AddLiked": {
-      const array = [...state.user.liked, action.payload];
-      const userTemp = { ...state.user, liked: array };
-
-      return { ...state, user: userTemp };
+      return {
+        ...state,
+        user: action.payload,
+      };
     }
     case "unlike": {
-      return { ...state, ...user, liked: action.payload };
+      return {
+        ...state,
+        user: { ...state.user, liked: [...state.user.liked, action.payload] },
+      };
     }
     default:
       return state;

@@ -1,5 +1,6 @@
 import { firebase } from "../../firebase/firebaseConfig";
 
+
 export const onLogin = (data, callback) => async (dispatch, getState) => {
   const { username, password } = data;
 
@@ -63,6 +64,7 @@ export const tryLocalSign = (callback, callbackLogin) => async (dispatch) => {
         .then((res) => {
           const userData = res.data();
           console.log("LOgin Succes");
+
           dispatch({
             type: "login_success",
             payload: userData,
@@ -85,7 +87,6 @@ export const signout = () => async (dispatch) => {
     .auth()
     .signOut()
     .then((res) => {
-    
       //dispatch({ type: "signout" });
     })
     .catch((err) => {

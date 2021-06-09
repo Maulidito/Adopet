@@ -1,4 +1,10 @@
-import React, { useLayoutEffect, useState, useEffect, useRef } from "react";
+import React, {
+  useLayoutEffect,
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+} from "react";
 import {
   View,
   StyleSheet,
@@ -7,16 +13,10 @@ import {
   Dimensions,
   TouchableOpacity,
   StatusBar,
-  ScrollView,
-  FlatList,
-  Modal,
-  Button,
   ActivityIndicator,
   BackHandler,
   Alert,
-  Switch,
   Animated,
-  PanResponder,
 } from "react-native";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -30,6 +30,11 @@ import {
 } from "../Context/Action/ActionDataAnimal";
 
 import { bindActionCreators } from "redux";
+import {
+  PrimaryColor,
+  SecondaryColor,
+  LoadingColor,
+} from "../components/Colors";
 
 const screenWidth = Dimensions.get("screen").width;
 const screenHeight = Dimensions.get("screen").height;
@@ -112,8 +117,10 @@ const HomeScreen = ({
 
   navigation.addListener(
     "focus",
-    () => {
+    (ev) => {
       BackHandler.addEventListener("hardwareBackPress", alert);
+
+      //setVisibleRefresh(true);
     },
     []
   );
@@ -127,19 +134,13 @@ const HomeScreen = ({
 
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor={"#57419D"} />
+      <StatusBar backgroundColor={PrimaryColor} />
       <View style={styles.headerProfile}>
         <Image
           source={require("../images/Example_Profile.jpg")}
           style={styles.headerImageProfile}
         />
         <Text style={styles.headerTextUsername}>{user.name}</Text>
-
-        <View style={styles.headerViewBell}>
-          <TouchableOpacity style={styles.headerIconBell}>
-            <Icon name="bell-outline" size={20} color="#57419D" />
-          </TouchableOpacity>
-        </View>
       </View>
 
       <View style={styles.headerList}>
@@ -190,7 +191,7 @@ const HomeScreen = ({
         <View style={styles.loadingStyle}>
           <ActivityIndicator
             animating={animating}
-            color="#7878AB"
+            color={LoadingColor}
             size="large"
           />
         </View>
@@ -213,12 +214,12 @@ const HomeScreen = ({
             <View style={{ height: 350, paddingTop: 20, alignItems: "center" }}>
               <ActivityIndicator
                 animating={loadingList}
-                color="#7878AB"
+                color={LoadingColor}
                 size="large"
               />
             </View>
           )}
-          onEndReached={({ distanceFromEnd }) => {
+          onEndReached={() => {
             setLoadingList(true);
             setPage(page + 1);
           }}
@@ -230,10 +231,9 @@ const HomeScreen = ({
             setFilter(null);
             setPage(1);
           }}
+          extraData={user.liked}
           renderItem={({ item }) => {
-            
-            
-            return <Item item={item}  />;
+            return <Item item={item} />;
           }}
         />
       </View>

@@ -16,6 +16,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import IonIcon from "react-native-vector-icons/Ionicons";
 import DetailDataLocation from "../components/DetailDataLocation";
 import DetailDataOrgs from "../components/DetailDataOrgs";
+import { PrimaryColor, SecondaryColor } from "../components/Colors";
 const Stack = createMaterialTopTabNavigator();
 
 const DetailDataScreen = ({ navigation, route }) => {
@@ -43,9 +44,9 @@ const DetailDataScreen = ({ navigation, route }) => {
           tabBarOptions={{
             showLabel: false,
             showIcon: true,
-            activeTintColor: "#57419D",
-            inactiveTintColor: "#BDBDBD",
-            indicatorStyle: { backgroundColor: "#57419D" },
+            activeTintColor: PrimaryColor,
+            inactiveTintColor: SecondaryColor,
+            indicatorStyle: { backgroundColor: PrimaryColor },
           }}
         >
           <Stack.Screen

@@ -12,7 +12,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { signout } from "../Context/Action/Action";
-
+import { PrimaryColor, PopUpColor } from "./Colors";
 const ItemAccount = ({ signout, navigation, user }) => {
   const heightScreen = Dimensions.get("screen").height;
 
@@ -47,7 +47,7 @@ const ItemAccount = ({ signout, navigation, user }) => {
           <Text>Edit Account</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.buttonLogout} onPress={signout}>
-          <Icon name="logout" size={30} color="#57419D" />
+          <Icon name="logout" size={30} color={PrimaryColor} />
           <Text>Logout</Text>
         </TouchableOpacity>
       </View>
@@ -63,7 +63,7 @@ const ItemAccount = ({ signout, navigation, user }) => {
       >
         <Text
           style={{
-            backgroundColor: "#85929E50",
+            backgroundColor: PopUpColor,
             padding: 10,
             borderRadius: 20,
             textAlign: "center",
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
   },
   buttonEdit: {
     backgroundColor: "white",
-    borderColor: "#57419D",
+    borderColor: PrimaryColor,
     borderWidth: 1,
     elevation: 5,
     borderRadius: 10,
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
   },
   buttonLogout: {
     backgroundColor: "white",
-    borderColor: "#57419D",
+    borderColor: PrimaryColor,
     borderWidth: 1,
     elevation: 5,
     borderRadius: 10,

@@ -1,16 +1,28 @@
-import React, { useRef, useState } from "react";
-import { View, StyleSheet, Text, Animated, PanResponder } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  View,
+  StyleSheet,
+  Text,
+  Animated,
+  PanResponder,
+  Dimensions,
+  ActivityIndicator,
+} from "react-native";
 import {
   FlatList,
   ScrollView,
   TouchableOpacity,
 } from "react-native-gesture-handler";
-import { bindActionCreators } from "redux";
-import { getLikedAnimal } from "../Context/Action/ActionDataAnimal";
+import {
+  getLikedAnimal,
+  processGetData,
+} from "../Context/Action/ActionDataAnimal";
 import { connect } from "react-redux";
 import ItemHome from "../components/ItemHome";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { PrimaryColor } from "./Colors";
 
-const ItemProfile = ({ Reducer, route }) => {
+const ItemProfile = ({ Reducer, route, navigation }) => {
   const { springUpAnim, springDownAnim } = route.params;
   const { user } = Reducer;
   const cardAnim = useRef(new Animated.Value(200)).current;
@@ -18,6 +30,36 @@ const ItemProfile = ({ Reducer, route }) => {
   const [heightCard, setHeightCard] = useState(0);
   const [enableScroll, setEnableScroll] = useState(false);
   const [panResponderControl, setPanResponderControl] = useState(true);
+  const [dataLikedAnimal, setDataLikedAnimal] = useState([]);
+  const [animated, setAnimated] = useState(true);
+
+  useEffect(() => {
+    navigation.addListener(
+      "focus",
+      () => {
+        console.log("item Profile", Reducer.user);
+        user.liked.map((val, index) => {
+          getLikedAnimal(val).then(async ({ data }) => {
+            dataLikedAnimal.push(...processGetData(data));
+            setDataLikedAnimal([...dataLikedAnimal]);
+            if (index + 1 == user.liked.length) {
+              setAnimated(false);
+            }
+          });
+        });
+      },
+      []
+    );
+    navigation.addListener(
+      "blur",
+      () => {
+        dataLikedAnimal.splice(0, dataLikedAnimal.length);
+        setDataLikedAnimal([]);
+        setAnimated(true);
+      },
+      []
+    );
+  }, []);
 
   const springUp = () => {
     springUpAnim();
@@ -109,11 +151,40 @@ const ItemProfile = ({ Reducer, route }) => {
           </View>
         </Animated.View>
 
-        {user.liked.map((val, index) => {
-          getLikedAnimal(val).then((data) => {
-            //console.log(data);
-          });
-        })}
+        <View>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              marginVertical: 40,
+            }}
+          >
+            <Text style={{ textAlign: "center", fontSize: 30, color: "black" }}>
+              your favorite
+            </Text>
+            <Icon
+              name={"heart-outline"}
+              size={50}
+              style={{ transform: [{ rotate: "25deg" }] }}
+              color={PrimaryColor}
+            />
+          </View>
+          <FlatList
+            ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
+            scrollEnabled={false}
+            data={dataLikedAnimal}
+            keyExtractor={(item, index) => String(index)}
+            renderItem={({ item }) => {
+              return <ItemHome item={item} />;
+            }}
+          />
+          <ActivityIndicator
+            size={50}
+            animating={animated}
+            color={PrimaryColor}
+          />
+        </View>
       </View>
     </ScrollView>
   );

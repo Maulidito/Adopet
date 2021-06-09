@@ -16,6 +16,11 @@ import DetailScreen from "./src/screens/DetailDataScreen";
 import ReduxThunk from "redux-thunk";
 import ReducerAnimal from "./src/Context/Reducer/ReducerAnimal";
 import ResolveAuthScreen from "./src/screens/ResolveAuthScreen";
+import {
+  PrimaryColor,
+  SecondaryColor,
+  BackgroundColor,
+} from "./src/components/Colors";
 const Stack = createStackNavigator();
 const HomeStack = createMaterialBottomTabNavigator();
 const LoginStack = createStackNavigator();
@@ -35,11 +40,11 @@ const MainNav = ({ navigation, state }) => {
   return (
     <HomeStack.Navigator
       initialRouteName="HomeScreen"
-      activeColor="#57419D"
-      inactiveColor="#BDBDBD"
+      activeColor={PrimaryColor}
+      inactiveColor={SecondaryColor}
       labeled={false}
       barStyle={{
-        backgroundColor: "#F5F5FA",
+        backgroundColor: BackgroundColor,
         borderTopStartRadius: 20,
         borderTopEndRadius: 20,
         elevation: 10,
@@ -118,12 +123,12 @@ export default App;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: BackgroundColor,
     alignItems: "center",
     justifyContent: "center",
   },
   iconBackground: {
-    backgroundColor: "white",
+    backgroundColor: BackgroundColor,
     width: 35,
     height: 35,
     borderRadius: 20,

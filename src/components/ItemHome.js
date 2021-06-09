@@ -23,10 +23,10 @@ const Item = ({ item, user, LikeAnimal, unlikeAnimal }) => {
   useEffect(() => {
     setLike(user.liked.includes(item.id));
   }, [item]);
+
   item.name ? null : (item.name = "Animals");
   item.description ? null : (item.description = "Please take care of me :)");
   item.sex ? null : (item.sex = "Unknown");
-
 
   return (
     <TouchableOpacity

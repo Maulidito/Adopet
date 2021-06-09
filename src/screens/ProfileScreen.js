@@ -15,7 +15,7 @@ import ItemAccount from "../components/ItemAccount";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { connect } from "react-redux";
 import SignUpScreen from "./SignUpScreen";
-
+import { BackgroundColor, PrimaryColor } from "../components/Colors";
 const StackNav = createMaterialTopTabNavigator();
 
 const ProfileScreen = ({ Reducer }) => {
@@ -55,22 +55,10 @@ const ProfileScreen = ({ Reducer }) => {
     <View style={styles.container}>
       <Animated.View style={{ ...styles.header, flex: tabAnim }}>
         <View style={styles.headerProfile}>
-          <TouchableOpacity onPress={() => {}}>
-            <Animated.Image
-              source={require("../images/Example_Profile.jpg")}
-              style={styles.headerImage}
-            />
-            <Icon
-              name="image-edit-outline"
-              size={30}
-              style={{
-                position: "absolute",
-                bottom: 0,
-                alignSelf: "flex-end",
-              }}
-              color="white"
-            />
-          </TouchableOpacity>
+          <Animated.Image
+            source={require("../images/Example_Profile.jpg")}
+            style={styles.headerImage}
+          />
 
           <Animated.Text style={{ ...styles.headerName, opacity: textAnim }}>
             {user.name}
@@ -121,10 +109,10 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "column",
     flex: 1,
-    backgroundColor: "#F5F5FA",
+    backgroundColor: BackgroundColor,
   },
   header: {
-    backgroundColor: "#57419D",
+    backgroundColor: PrimaryColor,
     flex: 0.5,
     justifyContent: "center",
   },
@@ -148,9 +136,10 @@ const styles = StyleSheet.create({
   headerName: {
     fontSize: 24,
     fontWeight: "200",
+    color: "white",
   },
   headerNav: {
-    backgroundColor: "#57419D",
+    backgroundColor: PrimaryColor,
   },
   headerNavButton: {
     color: "white",
